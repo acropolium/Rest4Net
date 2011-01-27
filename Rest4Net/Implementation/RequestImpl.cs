@@ -89,6 +89,7 @@ namespace Rest4Net.Implementation
 
         public event Request OnRequest;
         public event Response OnResponse;
+        public event Parsing OnParsing;
 
         private string ParamsToUri()
         {
@@ -170,22 +171,35 @@ namespace Rest4Net.Implementation
             }
         }
 
+        private TSerializableResult PerformParsing<TSerializableResult>(IResponse response)
+            where TSerializableResult : class, new()
+        {
+            if (OnParsing != null)
+            {
+                var cancel = false;
+                OnParsing(response, Parse, ref cancel);
+                if (cancel)
+                    return null;
+            }
+            return Parse<TSerializableResult>(response);
+        }
+
         public TSerializableResult Run<TSerializableResult>(bool passParamsInBody)
             where TSerializableResult : class, new()
         {
-            return Parse<TSerializableResult>(Run(passParamsInBody));
+            return PerformParsing<TSerializableResult>(Run(passParamsInBody));
         }
 
         public TSerializableResult Run<TSerializableResult>(string content)
             where TSerializableResult : class, new()
         {
-            return Parse<TSerializableResult>(Run(content));
+            return PerformParsing<TSerializableResult>(Run(content));
         }
 
         public TSerializableResult Run<TSerializableResult>(byte[] content = null)
             where TSerializableResult : class, new()
         {
-            return Parse<TSerializableResult>(Run(content));
+            return PerformParsing<TSerializableResult>(Run(content));
         }
 
         private readonly IDictionary<string, Type> _parsers = new Dictionary<string, Type>();
@@ -202,13 +216,18 @@ namespace Rest4Net.Implementation
         private TSerializableResult Parse<TSerializableResult>(IResponse response)
             where TSerializableResult : class, new()
         {
-            var item = new TSerializableResult();
+            return (TSerializableResult) (Parse(response, typeof (TSerializableResult)));
+        }
+
+        private object Parse(IResponse response, Type resultType)
+        {
+            var item = Activator.CreateInstance(resultType);
             var ct = (_constantContentType ?? response.ContentType).ToLower();
             var key = _parsers.Keys.FirstOrDefault(k => ct.Contains(k.ToLower()));
             if (String.IsNullOrEmpty(key))
                 return item;
             var attr =
-                (typeof(TSerializableResult).GetCustomAttributes(typeof(RestApiSerializableAttribute), false).
+                (resultType.GetCustomAttributes(typeof(RestApiSerializableAttribute), false).
                      FirstOrDefault() as RestApiSerializableAttribute) ?? new RestApiSerializableAttribute();
             return ((IRestSerializer) (Activator.CreateInstance(_parsers[key], attr))).Deserialize(item, response.Content);
         }

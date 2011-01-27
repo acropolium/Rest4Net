@@ -53,7 +53,7 @@ namespace Rest4Net
             {
                 return ModifyRequest(new RequestImpl(Host, UseSsl, Port))
                     .MapParser<ParserXml>("application/xml", "text/xml")
-                    .MapParser<ParserJson>("application/json", "text/json");
+                    .MapParser<ParserJson>("application/json", "text/json", "text/javascript");
             }
         }
 

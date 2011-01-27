@@ -70,11 +70,16 @@ namespace Rest4Net.Parsers
                     var mi = listPointer.GetType().GetMethod("Add");
                     foreach (var item in array)
                     {
+                        var type = field.FieldType.GetGenericArguments()[0];
+                        object data;
+                        if (type == typeof(string) || type == typeof(bool) || type == typeof(int) || type == typeof(float))
+                            data = ConvertType(type, GetValue(item));
+                        else
+                            data = FillType(Activator.CreateInstance(type), item);
                         mi.Invoke(listPointer,
                                   new[]
                                       {
-                                          FillType(Activator.CreateInstance(field.FieldType.GetGenericArguments()[0]),
-                                                   item)
+                                          data
                                       });
                     }
                 }

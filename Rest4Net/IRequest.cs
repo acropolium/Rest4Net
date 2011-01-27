@@ -7,6 +7,8 @@ namespace Rest4Net
 {
     public delegate void Request(HttpWebRequest request);
     public delegate void Response(IRequest request, HttpWebResponse webResponse, ref IResponse response);
+    public delegate object Parser(IResponse response, Type resultType);
+    public delegate void Parsing(IResponse response, Parser parser, ref bool cancelParsing);
 
     public interface IRequest : IDisposable
     {
@@ -24,6 +26,7 @@ namespace Rest4Net
 
         event Request OnRequest;
         event Response OnResponse;
+        event Parsing OnParsing;
 
         #region Generic response
         TSerializableResult Run<TSerializableResult>(bool passParamsInBody) where TSerializableResult : class, new();

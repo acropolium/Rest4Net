@@ -40,6 +40,8 @@ namespace Rest4Net.Parsers
 
         protected override IEnumerable<object> GetArray(object leaf)
         {
+            if (leaf is Hashtable)
+                return ((Hashtable) leaf).Cast<object>();
             return ((ArrayList)leaf).ToArray();
         }
 /*
