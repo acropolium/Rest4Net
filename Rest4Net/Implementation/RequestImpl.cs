@@ -240,6 +240,9 @@ namespace Rest4Net.Implementation
             if (OnResponse != null)
                 foreach (Response @delegate in OnResponse.GetInvocationList())
                     OnResponse -= @delegate;
+            if (OnParsing != null)
+                foreach (Parsing @delegate in OnParsing.GetInvocationList())
+                    OnParsing -= @delegate;
         }
     }
 }
