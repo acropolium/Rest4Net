@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -56,18 +57,24 @@ namespace Rest4Net.Parsers
         private object FillType(object obj, TRootType leaf)
         {
             var typeOfObject = obj.GetType();
+            if (leaf == null)
+                return obj;
+
+            var isPlainArray = leaf.GetType() == typeof(ArrayList);
+
             var fields = typeOfObject.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
                 var name = GetRealName(field.Name);
-                var subLeaf = FindSubLeaf(leaf, name);
-                if (subLeaf == null)
-                    continue;
-                if (field.FieldType.IsGenericType && typeof(IList<>).Equals(field.FieldType.GetGenericTypeDefinition()))
+                if (field.FieldType.IsGenericType && typeof(IList<>) == field.FieldType.GetGenericTypeDefinition())
                 {
-                    var array = GetArray(subLeaf);
                     var listPointer = field.GetValue(obj);
                     var mi = listPointer.GetType().GetMethod("Add");
+
+                    var subLeaf = FindSubLeaf(leaf, name);
+                    if (subLeaf == null)
+                        continue;
+                    var array = GetArray(subLeaf);
                     foreach (var item in array)
                     {
                         var type = field.FieldType.GetGenericArguments()[0];
@@ -85,6 +92,11 @@ namespace Rest4Net.Parsers
                 }
                 else
                 {
+                    if (isPlainArray)
+                        continue;
+                    var subLeaf = FindSubLeaf(leaf, name);
+                    if (subLeaf == null)
+                        continue;
                     field.SetValue(obj,
                                    LeafHasChildren(subLeaf)
                                        ? FillType(Activator.CreateInstance(field.FieldType), subLeaf)

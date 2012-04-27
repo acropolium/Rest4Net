@@ -8,34 +8,33 @@ namespace Rest4Net.Implementation
 {
     public class ResponseImpl : IResponse
     {
-        public HttpStatusCode Code { get; private set; }
-        public string CodeDescription { get; private set; }
+        public HttpStatusCode Code { get; set; }
+        public string CodeDescription { get; set; }
 
-        public string ContentType { get; private set; }
+        public string ContentType { get; set; }
 
-        public long ContentLength { get; private set; }
-        public byte[] Content { get; private set; }
-        public IDictionary<string, string> Headers { get; private set; }
-        public Exception Exception { get; private set; }
+        public long ContentLength { get; set; }
+        public byte[] Content { get; set; }
+        public IDictionary<string, string> Headers { get; set; }
+        public Exception Exception { get; set; }
 
-        public ResponseImpl(Exception exception)
+        public ResponseImpl(HttpWebResponse response, Exception exception = null)
         {
+            if (response != null)
+            {
+                Code = response.StatusCode;
+                CodeDescription = response.StatusDescription;
+
+                ContentType = response.ContentType;
+
+                ContentLength = response.ContentLength;
+                Content = ContentLength > 0 ? ReadFully(response.GetResponseStream()) : null;
+
+                Headers = new Dictionary<string, string>();
+                foreach (var headerKey in response.Headers.AllKeys)
+                    Headers.Add(headerKey, response.Headers.Get(headerKey));
+            }
             Exception = exception;
-        }
-
-        public ResponseImpl(HttpWebResponse response)
-        {
-            Code = response.StatusCode;
-            CodeDescription = response.StatusDescription;
-
-            ContentType = response.ContentType;
-
-            ContentLength = response.ContentLength;
-            Content = ContentLength > 0 ? ReadFully(response.GetResponseStream()) : null;
-
-            Headers = new Dictionary<string, string>();
-            foreach (var headerKey in response.Headers.AllKeys)
-                Headers.Add(headerKey, response.Headers.Get(headerKey));
         }
 
         private static byte[] ReadFully(Stream input)

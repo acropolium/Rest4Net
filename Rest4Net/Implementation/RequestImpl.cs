@@ -167,7 +167,7 @@ namespace Rest4Net.Implementation
             }
             catch (WebException exception)
             {
-                return new ResponseImpl(exception);
+                return new ResponseImpl((HttpWebResponse)exception.Response, exception);
             }
         }
 

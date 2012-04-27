@@ -14,6 +14,8 @@ namespace Rest4Net.Parsers
 
         protected override object ParseContent(byte[] content)
         {
+            if (content == null)
+                return null;
             return (new JsonFormatParser()).JsonDecode(Encoding.UTF8.GetString(content)) as Hashtable;
         }
 
@@ -238,7 +240,7 @@ namespace Rest4Net.Parsers
                             break;
                         case TokenSquaredClose:
                             NextToken(json, ref index);
-                            break;
+                            return array;
                         default:
                             {
                                 var success = true;
