@@ -1,0 +1,6 @@
+/_ReSharper.Rest4Net/
+Settings.Designer.cs
+*.suo
+*.user
+bin
+obj

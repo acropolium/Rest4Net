@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Rest4Net</id>
+    <version>0.8.2</version>
+    <authors>Oleksii Glib</authors>
+    <owners>Oleksii Glib</owners>
+    <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
+    <projectUrl>https://github.com/acropolium/Rest4Net</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Library to develop rest service accessors smoothly</description>
+    <copyright>Copyright 2010-2012</copyright>
+    <tags>rest api</tags>
+  </metadata>
+  <files>
+    <file src="build\binaries\Rest4Net.dll" target="lib\net40" />
+    <file src="build\binaries\Rest4Net.pdb" target="lib\net40" />
+    <file src="src\Rest4Net\**\*.cs" target="src" />
+  </files>
+</package>
