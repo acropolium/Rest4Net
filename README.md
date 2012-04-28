@@ -1,0 +1,1 @@
+Documentation with examples could be found at [http://www.oleksiy.pro/2010/07/03/another-restapi-accessor-for-net/]
