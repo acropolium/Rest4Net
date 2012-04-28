@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7C7C70B2-9EBD-4491-8A0E-EB5DD8347A0A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rest4Net.BitLy</RootNamespace>
+    <AssemblyName>Rest4Net.BitLy</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Client.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Responses\IAuthenticate.cs" />
+    <Compile Include="Responses\IBitlyItem.cs" />
+    <Compile Include="Responses\IBitlyResponse.cs" />
+    <Compile Include="Responses\IClicks.cs" />
+    <Compile Include="Responses\IExpanded.cs" />
+    <Compile Include="Responses\IInfo.cs" />
+    <Compile Include="Responses\ILookup.cs" />
+    <Compile Include="Responses\Implementation\AuthenticateImpl.cs" />
+    <Compile Include="Responses\Implementation\BitlyItemImpl.cs" />
+    <Compile Include="Responses\Implementation\BitlyResponseImpl.cs" />
+    <Compile Include="Responses\Implementation\ClicksImpl.cs" />
+    <Compile Include="Responses\Implementation\ExpandedImpl.cs" />
+    <Compile Include="Responses\Implementation\InfoImpl.cs" />
+    <Compile Include="Responses\Implementation\LookupImpl.cs" />
+    <Compile Include="Responses\Implementation\ShortenImpl.cs" />
+    <Compile Include="Responses\Implementation\ValidateImpl.cs" />
+    <Compile Include="Responses\Implementation\ValidDomainImpl.cs" />
+    <Compile Include="Responses\IShorten.cs" />
+    <Compile Include="Responses\IValidate.cs" />
+    <Compile Include="Responses\IValidDomain.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rest4Net\Rest4Net.csproj">
+      <Project>{0EC1D7C7-2A45-49EC-A6B8-6AC6CFD5C74A}</Project>
+      <Name>Rest4Net</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
