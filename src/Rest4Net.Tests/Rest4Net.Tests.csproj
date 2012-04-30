@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0EC1D7C7-2A45-49EC-A6B8-6AC6CFD5C74A}</ProjectGuid>
+    <ProjectGuid>{7D74E4CB-4A23-4F59-98B5-85F816F94211}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rest4Net</RootNamespace>
-    <AssemblyName>Rest4Net</AssemblyName>
+    <RootNamespace>Rest4Net.Tests</RootNamespace>
+    <AssemblyName>Rest4Net.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,42 +31,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Json">
-      <HintPath>..\packages\System.Json.4.0.20126.16343\lib\net40\System.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandResult.cs" />
-    <Compile Include="CommandUtils\BodyProviders\StringProvider.cs" />
-    <Compile Include="Command.cs" />
-    <Compile Include="CommandUtils\ResponseReaders\ByteArrayReader.cs" />
-    <Compile Include="CommandUtils\ResponseReaders\StringReader.cs" />
-    <Compile Include="Connector.cs" />
-    <Compile Include="ICommandResponseReader.cs" />
-    <Compile Include="ICommandBodyProvider.cs" />
-    <Compile Include="IRestSerializer.cs" />
-    <Compile Include="Implementation\RequestImpl.cs" />
-    <Compile Include="Implementation\ResponseImpl.cs" />
-    <Compile Include="IRequest.cs" />
-    <Compile Include="IResponse.cs" />
-    <Compile Include="Parsers\BaseSerializer.cs" />
-    <Compile Include="Parsers\ParserJson.cs" />
-    <Compile Include="Parsers\ParserXml.cs" />
+    <Compile Include="GeneralTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocols\BaseProtocol.cs" />
-    <Compile Include="Protocols\CommonWebProtocol.cs" />
-    <Compile Include="Protocols\Https.cs" />
-    <Compile Include="Protocols\Http.cs" />
-    <Compile Include="RequestType.cs" />
-    <Compile Include="RestApiSerializableAttribute.cs" />
-    <Compile Include="RestServiceAccessProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Rest4Net\Rest4Net.csproj">
+      <Project>{0EC1D7C7-2A45-49EC-A6B8-6AC6CFD5C74A}</Project>
+      <Name>Rest4Net</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
