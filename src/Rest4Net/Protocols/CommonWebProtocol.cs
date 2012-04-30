@@ -39,9 +39,9 @@ namespace Rest4Net.Protocols
             return new Uri(sb.ToString());
         }
 
-        private HttpWebRequest CreateRequest(Command cmd)
+        private HttpWebRequest CreateRequest(Uri uri, Command cmd)
         {
-            var request = (HttpWebRequest)WebRequest.Create(CreateUri(cmd));
+            var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = cmd.Type.ToString().ToUpper();
             foreach (var pair in cmd.Headers)
                 request.Headers[pair.Key] = pair.Value;
@@ -50,9 +50,11 @@ namespace Rest4Net.Protocols
 
         public override CommandResult Execute(Command command)
         {
+			var uri = CreateUri(command);
+			
             try
             {
-                var request = CreateRequest(command);
+                var request = CreateRequest(uri, command);
 
                 if (command.BodyProvider != null)
                     command.BodyProvider.Provide(request.GetRequestStream());
@@ -64,8 +66,15 @@ namespace Rest4Net.Protocols
             }
             catch (WebException exception)
             {
-                return ToResult((HttpWebResponse)exception.Response);
+				var r = (HttpWebResponse)exception.Response;
+				if (r == null)
+					throw new Exceptions.ConnectionException(uri.ToString(), exception);
+                return ToResult(r);
             }
+			catch (Exception ex)
+			{
+				throw new Exceptions.ConnectionException(uri.ToString(), ex);
+			}
         }
 
         private static CommandResult ToResult(HttpWebResponse response)

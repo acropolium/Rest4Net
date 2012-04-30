@@ -30,6 +30,11 @@ namespace Rest4Net
             return JsonValue.Load(_dataStream);
         }
 
+        public object ToObject()
+        {
+            return ToJson().AsDynamic();
+        }
+
         public override string ToString()
         {
             using (var r = new CommandUtils.ResponseReaders.StringReader())
