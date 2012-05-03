@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Json;
@@ -29,6 +29,11 @@ namespace Rest4Net
         public JsonValue ToJson()
         {
             return JsonValue.Load(_dataStream);
+        }
+
+        public object ToObject()
+        {
+            return ToJson().AsDynamic();
         }
 
         public override string ToString()

@@ -1,21 +1,9 @@
 ﻿using NUnit.Framework;
 using Rest4Net.Protocols;
+using Rest4Net.Tests.HelperStubs;
 
 namespace Rest4Net.Tests
 {
-    public class GoogleCustomSearch : RestApiProvider
-    {
-        public GoogleCustomSearch() : base(new Https("www.googleapis.com")) {}
-
-        public CommandResult Get()
-        {
-            return Cmd("/customsearch/v1")
-                .WithParameter("cx", "017576662512468239146:omuauf_lfve")
-                .WithParameter("q", "lectures")
-                .Execute();
-        }
-    }
-
     [TestFixture]
     public class GeneralTest
     {
@@ -23,21 +11,24 @@ namespace Rest4Net.Tests
         private const string ApiKey = "";
         #endregion
 
-        private GoogleCustomSearch _client;
-
-        [SetUp]
-        public void Init()
-        {
-            _client = new GoogleCustomSearch();
-        }
-
         [Test(Description = "General verification of all functions")]
         public void GeneralVerification()
         {
-            using (var s = _client.Get())
+			var p = new GoogleCustomSearch();
+            using (var s = p.Get())
             {
-                var d = s.ToJson();
+                var o = s.ToObject();
+				if (o == null)
+					throw new System.ArgumentNullException();
             }
+        }
+
+        [Test(Description = "Failed Connection Test")]
+		[ExpectedException(typeof(Rest4Net.Exceptions.ConnectionException))]
+        public void FailedConnection()
+        {
+            var p = new FailedDomainProvider();
+            p.Get ();
         }
     }
 }

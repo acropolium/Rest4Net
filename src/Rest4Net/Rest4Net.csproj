@@ -10,7 +10,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rest4Net</RootNamespace>
     <AssemblyName>Rest4Net</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -65,6 +64,9 @@
     <Compile Include="RequestType.cs" />
     <Compile Include="RestApiSerializableAttribute.cs" />
     <Compile Include="RestApiProvider.cs" />
+    <Compile Include="Exceptions\Rest4NetException.cs" />
+    <Compile Include="Exceptions\ConnectionException.cs" />
+
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -77,4 +79,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
 </Project>
