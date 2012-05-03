@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Json">
@@ -66,7 +67,6 @@
     <Compile Include="RestApiProvider.cs" />
     <Compile Include="Exceptions\Rest4NetException.cs" />
     <Compile Include="Exceptions\ConnectionException.cs" />
-
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -79,7 +79,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
