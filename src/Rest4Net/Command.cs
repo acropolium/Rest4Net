@@ -10,19 +10,19 @@ namespace Rest4Net
     {
         private readonly RequestType _type;
         private readonly string _path;
-        private readonly RestServiceAccessProvider _executor;
+        private readonly RestApiProvider _executor;
         private readonly IList<KeyValuePair<string, string>> _options = new List<KeyValuePair<string, string>>();
         private readonly IList<KeyValuePair<string, string>> _headers = new List<KeyValuePair<string, string>>();
         private readonly IList<KeyValuePair<string, string>> _parameters = new List<KeyValuePair<string, string>>();
 
-        private Command(RequestType type, string path, RestServiceAccessProvider executor)
+        private Command(RequestType type, string path, RestApiProvider executor)
         {
             _type = type;
             _path = path;
             _executor = executor;
         }
 
-        internal static Command Create(string path, RequestType type, RestServiceAccessProvider executor)
+        internal static Command Create(string path, RequestType type, RestApiProvider executor)
         {
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException("path");

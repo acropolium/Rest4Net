@@ -43,6 +43,7 @@
     <Compile Include="CommandResult.cs" />
     <Compile Include="CommandUtils\BodyProviders\StringProvider.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="CommandUtils\JsonValue2Object.cs" />
     <Compile Include="CommandUtils\ResponseReaders\ByteArrayReader.cs" />
     <Compile Include="CommandUtils\ResponseReaders\StringReader.cs" />
     <Compile Include="Connector.cs" />
@@ -63,7 +64,7 @@
     <Compile Include="Protocols\Http.cs" />
     <Compile Include="RequestType.cs" />
     <Compile Include="RestApiSerializableAttribute.cs" />
-    <Compile Include="RestServiceAccessProvider.cs" />
+    <Compile Include="RestApiProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Json;
+using Rest4Net.CommandUtils;
 
 namespace Rest4Net
 {
@@ -34,6 +35,14 @@ namespace Rest4Net
         {
             using (var r = new CommandUtils.ResponseReaders.StringReader())
                 return r.Read(_dataStream);
+        }
+
+        public T To<T>(Func<JsonValue, JsonValue> prepareJson = null)
+        {
+            var json = ToJson();
+            if (prepareJson != null)
+                json = prepareJson(json);
+            return json.ConvertTo<T>();
         }
         
         public void Dispose()

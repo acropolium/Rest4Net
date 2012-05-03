@@ -3,7 +3,7 @@ using Rest4Net.Protocols;
 
 namespace Rest4Net.Tests
 {
-    public class GoogleCustomSearch : RestServiceAccessProvider
+    public class GoogleCustomSearch : RestApiProvider
     {
         public GoogleCustomSearch() : base(new Https("www.googleapis.com")) {}
 

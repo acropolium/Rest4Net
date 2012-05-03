@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace Rest4Net.BitLy.Tests
@@ -13,18 +12,12 @@ namespace Rest4Net.BitLy.Tests
         private const string WrongPassword = "";
         #endregion
 
-        private Client _client;
+        private BitLyProvider _client;
 
         [SetUp]
         public void Init()
         {
-            _client = new Client(Login, ApiKey);
-        }
-
-        [TearDown]
-        public void Destroy()
-        {
-            _client.Dispose();
+            _client = new BitLyProvider(Login, ApiKey);
         }
 
         [Test(Description = "General verification of all functions")]

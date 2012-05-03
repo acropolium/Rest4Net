@@ -45,6 +45,7 @@ namespace Rest4Net.Protocols
             request.Method = cmd.Type.ToString().ToUpper();
             foreach (var pair in cmd.Headers)
                 request.Headers[pair.Key] = pair.Value;
+            request.ContentType = "application/json";
             return request;
         }
 
@@ -57,10 +58,7 @@ namespace Rest4Net.Protocols
                 if (command.BodyProvider != null)
                     command.BodyProvider.Provide(request.GetRequestStream());
 
-                using (var response = (HttpWebResponse)request.GetResponse())
-                {
-                    return ToResult(response);
-                }
+                return ToResult((HttpWebResponse) request.GetResponse());
             }
             catch (WebException exception)
             {

@@ -4,7 +4,7 @@ namespace Rest4Net.BitLy.Responses.Implementation
 {
     internal class LookupImpl : ILookup
     {
-        private readonly IList<LookupItemImpl> _lookup = new List<LookupItemImpl>();
+        private readonly List<LookupItemImpl> _lookup;
 
         public IEnumerable<ILookupItem> Lookup
         {

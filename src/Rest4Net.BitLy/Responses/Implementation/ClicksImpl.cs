@@ -4,7 +4,7 @@ namespace Rest4Net.BitLy.Responses.Implementation
 {
     internal class ClicksImpl : IClicks
     {
-        private readonly IList<BitlyItemImpl> _clicks = new List<BitlyItemImpl>();
+        private readonly List<BitlyItemImpl> _clicks;
 
         public IEnumerable<IBitlyItem> Clicks
         {
