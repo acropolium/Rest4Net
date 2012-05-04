@@ -32,6 +32,12 @@ namespace Rest4Net.IronMq.Tests
             }
         }
 
+        [TearDown]
+        public void Dispose()
+        {
+            _client.Dispose();
+        }
+
         [Test(Description = "General verification of all functions")]
         public void GeneralVerification()
         {

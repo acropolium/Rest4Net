@@ -1,8 +1,9 @@
-﻿using Rest4Net.Protocols;
+﻿using System;
+using Rest4Net.Protocols;
 
 namespace Rest4Net
 {
-    public abstract class RestApiProvider
+    public abstract class RestApiProvider : IDisposable
     {
         private readonly BaseProtocol _protocol;
 
@@ -20,5 +21,7 @@ namespace Rest4Net
         {
             return _protocol.Execute(cmd);
         }
+
+        public virtual void Dispose() { }
     }
 }

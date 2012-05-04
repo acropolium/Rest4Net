@@ -46,7 +46,6 @@
     <Compile Include="GeneralTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HelperStubs\FailedDomainProvider.cs" />
-    <Compile Include="HelperStubs\GoogleCustomSearch.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rest4Net\Rest4Net.csproj">
@@ -62,7 +61,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="HelperStubs\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

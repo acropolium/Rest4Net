@@ -20,6 +20,12 @@ namespace Rest4Net.BitLy.Tests
             _client = new BitLyProvider(Login, ApiKey);
         }
 
+        [TearDown]
+        public void Dispose()
+        {
+            _client.Dispose();
+        }
+
         [Test(Description = "General verification of all functions")]
         public void GeneralVerification()
         {
