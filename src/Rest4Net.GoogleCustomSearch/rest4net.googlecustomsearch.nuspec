@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Rest4Net.BitLy</id>
+    <id>Rest4Net.GoogleCustomSearch</id>
     <version>0.2.1</version>
     <authors>Oleksii Glib</authors>
     <owners>Oleksii Glib</owners>
     <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
     <projectUrl>https://github.com/acropolium/Rest4Net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Bit.ly service accessor</description>
-    <copyright>Copyright 2010</copyright>
+    <description>Google custom search API accessor</description>
+    <copyright>Copyright 2012</copyright>
 	<dependencies>
       <dependency id="Rest4Net" />
     </dependencies>
-    <tags>rest api bitly</tags>
+    <tags>rest api google search custom customsearch</tags>
   </metadata>
   <files>
-    <file src="build\binaries\Rest4Net.BitLy.dll" target="lib\net40" />
-    <file src="build\binaries\Rest4Net.BitLy.pdb" target="lib\net40" />
-    <file src="src\Rest4Net.BitLy\**\*.cs" target="src" />
+    <file src="build\binaries\Rest4Net.GoogleCustomSearch.dll" target="lib\net40" />
+    <file src="build\binaries\Rest4Net.GoogleCustomSearch.pdb" target="lib\net40" />
+    <file src="src\Rest4Net.GoogleCustomSearch\**\*.cs" target="src" />
   </files>
 </package>

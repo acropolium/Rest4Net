@@ -79,6 +79,7 @@ task :nuget_publish do |task|
     nupkgs.each do |nupkg| 
         puts "Pushing #{nupkg}"
         nuget_push = NuGetPush.new
+        nuget_push.command = "tools/nuget/nuget.exe"
         nuget_push.package = File.expand_path(nupkg)
         nuget_push.create_only = false
         nuget_push.execute
