@@ -26,6 +26,13 @@ namespace Rest4Net.GoogleCustomSearch
                 .WithParameter("alt", "json");
         }
 
+        /// <summary>
+        /// Makes a search with google API
+        /// https://developers.google.com/custom-search/v1/using_rest
+        /// </summary>
+        /// <param name="dataToSearch">actually Query String</param>
+        /// <param name="parameters">number of search parameters like described at https://developers.google.com/custom-search/v1/using_rest#query-params </param>
+        /// <returns>Search summary. Throws ResultException if parameters are wrong</returns>
         public SearchResult Search(string dataToSearch, SearchParameters parameters = null)
         {
             var cmd = Run().WithParameter("q", dataToSearch);
