@@ -12,7 +12,7 @@ namespace Rest4Net.IronMq.Tests
         private const string ProjectId = "";
         #endregion
 
-        private Client _client;
+        private IronMqProvider _client;
         private string _queueName;
         private HashSet<string> _names;
         private const int NewMessages = 5;
@@ -21,7 +21,7 @@ namespace Rest4Net.IronMq.Tests
         [SetUp]
         public void Init()
         {
-            _client = new Client(Token, ProjectId);
+            _client = new IronMqProvider(Token, ProjectId);
             _queueName = MessageSize.RandomString();
 
             // Generate messages
@@ -33,7 +33,7 @@ namespace Rest4Net.IronMq.Tests
         }
 
         [TearDown]
-        public void Destroy()
+        public void Dispose()
         {
             _client.Dispose();
         }

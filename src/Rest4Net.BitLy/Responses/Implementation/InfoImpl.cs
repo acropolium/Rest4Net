@@ -4,7 +4,7 @@ namespace Rest4Net.BitLy.Responses.Implementation
 {
     internal class InfoImpl : IInfo
     {
-        private readonly IList<InfoItemImpl> _info = new List<InfoItemImpl>();
+        private readonly List<InfoItemImpl> _info;
 
         public IEnumerable<IInfoItem> Info
         {

@@ -4,7 +4,7 @@ namespace Rest4Net.BitLy.Responses.Implementation
 {
     internal class ExpandedImpl : IExpanded
     {
-        private readonly IList<BitlyItemImpl> _expand = new List<BitlyItemImpl>();
+        private readonly List<BitlyItemImpl> _expand;
 
         public IEnumerable<IBitlyItem> Expand
         {

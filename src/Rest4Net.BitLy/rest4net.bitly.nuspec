@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Rest4Net.BitLy</id>
-    <version>0.1.1</version>
+    <version>0.2.1</version>
     <authors>Oleksii Glib</authors>
     <owners>Oleksii Glib</owners>
     <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>

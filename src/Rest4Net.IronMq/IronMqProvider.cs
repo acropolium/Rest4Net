@@ -1,53 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Json;
 using System.Linq;
-using System.Net;
 using System.Text;
 using Rest4Net.IronMq.Responses.Implementation;
+using Rest4Net.Protocols;
 
 namespace Rest4Net.IronMq
 {
-    public class Client : Connector
+    public class IronMqProvider : RestApiProvider
     {
         private readonly string _token;
         private readonly string _projectId;
 
-        public Client(string token, string projectId, Provider provider = Provider.AWS)
-            : base(GetProviderHost(provider) + ".iron.io", true)
+        public IronMqProvider(string token, string projectId, Provider provider = Provider.AWS)
+            : base(new Https(GetProviderHost(provider) + ".iron.io"))
         {
             _token = token;
             _projectId = projectId;
         }
 
-        protected override IRequest Build
+        protected override Command Cmd(string path, RequestType requestType = RequestType.Get)
         {
-            get
-            {
-                var rq = base.Build
-                    .AddHeader("Authorization", String.Format("OAuth {0}", _token))
-                    .AlwaysUseContentType("application/json");
-                rq.OnRequest += rq_OnRequest;
-                rq.OnResponse += rq_OnResponse;
-                return rq;
-            }
+            return base.Cmd(path, requestType)
+                .WithHeader("Authorization", String.Format("OAuth {0}", _token));
         }
 
-        private static void rq_OnRequest(HttpWebRequest request)
+        private static JsonValue JsonPreparer(JsonValue input)
         {
-            request.ContentType = "application/json";
+            return input.GetType() != typeof(JsonArray) ? input : new JsonObject(new KeyValuePair<string, JsonValue>("data", input));
         }
 
-        private static void rq_OnResponse(IRequest request, HttpWebResponse webresponse, ref IResponse response)
+        protected Command BuildWithPath(string path, RequestType type = RequestType.Get)
         {
-            if (response.Content == null || response.Content.Length == 0 || response.Content[0] != 91) return;
-            var json = "{\"data\":" + Encoding.UTF8.GetString(response.Content) + "}";
-            response.Content = Encoding.UTF8.GetBytes(json);
-            response.ContentLength = response.Content.Length;
-        }
-
-        protected IRequest BuildWithPath(string path)
-        {
-            return Build.SetPath(String.Format("/1/projects/{0}/queues{1}", _projectId, path));
+            return Cmd(String.Format("/1/projects/{0}/queues{1}", _projectId, path), type);
         }
 
         private static string GetProviderHost(Provider provider)
@@ -63,19 +50,22 @@ namespace Rest4Net.IronMq
 
         public IEnumerable<IQueue> Queues(uint page = 0)
         {
-            return BuildWithPath("").AddQueryParam("page", page.ToString()).Run<DataImpl<IQueue, QueueImpl>>().Data;
+            return
+                BuildWithPath("").WithParameter("page", page.ToString(CultureInfo.InvariantCulture)).Execute().To
+                    <DataImpl<IQueue, QueueImpl>>(
+                        JsonPreparer).Data;
         }
 
         public IQueue Queue(string name)
         {
-            var q = BuildWithPath("/" + name).Run<QueueImpl>();
+            var q = BuildWithPath("/" + name).Execute().To<QueueImpl>(JsonPreparer);
             q.ProjectID = _projectId;
             return q;
         }
 
         private string RunInfo(string path, RequestType type = RequestType.Post)
         {
-            return BuildWithPath(path).SetMethod(type).Run<InfoImpl>().Message;
+            return BuildWithPath(path, type).Execute().To<InfoImpl>(JsonPreparer).Message;
         }
 
         public bool QueueClear(string name)
@@ -114,8 +104,8 @@ namespace Rest4Net.IronMq
             if (messages == null)
                 return null;
             var r =
-                BuildWithPath("/" + queueName + "/messages").SetMethod(RequestType.Post).Run<InfoMsgImpl>(
-                    MessagesToJson(messages));
+                BuildWithPath("/" + queueName + "/messages", RequestType.Post).WithBody(MessagesToJson(messages)).
+                    Execute().To<InfoMsgImpl>(JsonPreparer);
             var l = new List<IMessage>();
             var i = 0;
             foreach (var message in messages)
@@ -134,7 +124,7 @@ namespace Rest4Net.IronMq
 
         public IEnumerable<IMessage> GetMessages(string queueName, int countToTake = 1)
         {
-            return BuildWithPath("/" + queueName + "/messages").AddQueryParam("n", countToTake.ToString()).Run<MessagesImpl>().messages;
+            return BuildWithPath("/" + queueName + "/messages").WithParameter("n", countToTake.ToString()).Execute().To<MessagesImpl>(JsonPreparer).messages;
         }
 
         public bool RemoveMessage(string queueName, string id)

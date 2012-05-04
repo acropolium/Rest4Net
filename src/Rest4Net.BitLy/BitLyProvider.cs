@@ -2,31 +2,28 @@
 using System.Linq;
 using Rest4Net.BitLy.Responses;
 using Rest4Net.BitLy.Responses.Implementation;
+using Rest4Net.Protocols;
 
 namespace Rest4Net.BitLy
 {
-    public class Client : Connector
+    public class BitLyProvider : RestApiProvider
     {
         private readonly string _login;
         private readonly string _apiKey;
-        private const string Format = @"json";
 
-        public Client(string login, string apiKey)
-            : base(@"api.bit.ly")
+        public BitLyProvider(string login, string apiKey)
+            : base(new Http(@"api.bit.ly"))
         {
             _login = login;
             _apiKey = apiKey;
         }
 
-        protected override IRequest Build
+        private Command C(string path, RequestType requestType = RequestType.Get)
         {
-            get
-            {
-                return base.Build.AddQueryParam(@"login", _login)
-                    .AddQueryParam(@"apiKey", _apiKey)
-                    .AddQueryParam(@"format", Format)
-                    .AlwaysUseContentType("application/json");
-            }
+            return Cmd(path, requestType)
+                .WithParameter(@"login", _login)
+                .WithParameter(@"apiKey", _apiKey)
+                .WithParameter(@"format", @"json");
         }
 
         /// <summary>
@@ -40,14 +37,14 @@ namespace Rest4Net.BitLy
         /// <returns>Info about short url</returns>
         public IBitlyResponse<IShorten> Shorten(string longUrl, string domain = null, string xLogin = null, string xApiKey = null)
         {
-            var query = Build.SetPath("/v3/shorten");
+            var query = C("/v3/shorten");
             if (!String.IsNullOrEmpty(domain))
-                query = query.AddQueryParam("domain", domain);
+                query = query.WithParameter("domain", domain);
             if (!String.IsNullOrEmpty(xLogin))
-                query = query.AddQueryParam("x_login", xLogin);
+                query = query.WithParameter("x_login", xLogin);
             if (!String.IsNullOrEmpty(xApiKey))
-                query = query.AddQueryParam("x_apiKey", xApiKey);
-            return query.AddQueryParam("longUrl", longUrl).Run<BitlyResponseImpl<IShorten, ShortenImpl>>();
+                query = query.WithParameter("x_apiKey", xApiKey);
+            return query.WithParameter("longUrl", longUrl).Execute().To<BitlyResponseImpl<IShorten, ShortenImpl>>();
         }
 
         /// <summary>
@@ -59,10 +56,10 @@ namespace Rest4Net.BitLy
         /// <returns>Info about original url</returns>
         public IBitlyResponse<IExpanded> Expand(string shortUrl, params string[] shortUrls)
         {
-            var query = Build.SetPath("/v3/expand").AddQueryParam("shortUrl", shortUrl);
+            var query = C("/v3/expand").WithParameter("shortUrl", shortUrl);
             if (shortUrls != null)
-                query = shortUrls.Aggregate(query, (current, url) => current.AddQueryParam("shortUrl", url));
-            return query.Run<BitlyResponseImpl<IExpanded, ExpandedImpl>>();
+                query = shortUrls.Aggregate(query, (current, url) => current.WithParameter("shortUrl", url));
+            return query.Execute().To<BitlyResponseImpl<IExpanded, ExpandedImpl>>();
         }
 
         /// <summary>
@@ -74,10 +71,10 @@ namespace Rest4Net.BitLy
         /// <returns>Info about original url</returns>
         public IBitlyResponse<IExpanded> ExpandWithHashes(string hash, params string[] hashes)
         {
-            var query = Build.SetPath("/v3/expand").AddQueryParam("hash", hash);
+            var query = C("/v3/expand").WithParameter("hash", hash);
             if (hashes != null)
-                query = hashes.Aggregate(query, (current, h) => current.AddQueryParam("hash", h));
-            return query.Run<BitlyResponseImpl<IExpanded, ExpandedImpl>>();
+                query = hashes.Aggregate(query, (current, h) => current.WithParameter("hash", h));
+            return query.Execute().To<BitlyResponseImpl<IExpanded, ExpandedImpl>>();
         }
 
         /// <summary>
@@ -89,7 +86,8 @@ namespace Rest4Net.BitLy
         /// <returns>designating whether the x_login and x_apiKey pair is currently valid</returns>
         public IBitlyResponse<IValidate> Validate(string xLogin, string xApiKey)
         {
-            return Build.SetPath("/v3/validate").AddQueryParam("x_login", xLogin).AddQueryParam("x_apiKey", xApiKey).Run<BitlyResponseImpl<IValidate, ValidateImpl>>();
+            return C("/v3/validate").WithParameter("x_login", xLogin).WithParameter("x_apiKey", xApiKey)
+                .Execute().To<BitlyResponseImpl<IValidate, ValidateImpl>>();
         }
 
         /// <summary>
@@ -101,10 +99,10 @@ namespace Rest4Net.BitLy
         /// <returns></returns>
         public IBitlyResponse<IClicks> Clicks(string shortUrl, params string[] shortUrls)
         {
-            var query = Build.SetPath("/v3/clicks").AddQueryParam("shortUrl", shortUrl);
+            var query = C("/v3/clicks").WithParameter("shortUrl", shortUrl);
             if (shortUrls != null)
-                query = shortUrls.Aggregate(query, (current, url) => current.AddQueryParam("shortUrl", url));
-            return query.Run<BitlyResponseImpl<IClicks, ClicksImpl>>();
+                query = shortUrls.Aggregate(query, (current, url) => current.WithParameter("shortUrl", url));
+            return query.Execute().To<BitlyResponseImpl<IClicks, ClicksImpl>>();
         }
 
         /// <summary>
@@ -116,10 +114,10 @@ namespace Rest4Net.BitLy
         /// <returns></returns>
         public IBitlyResponse<IClicks> ClicksWithHashes(string hash, params string[] hashes)
         {
-            var query = Build.SetPath("/v3/clicks").AddQueryParam("hash", hash);
+            var query = C("/v3/clicks").WithParameter("hash", hash);
             if (hashes != null)
-                query = hashes.Aggregate(query, (current, h) => current.AddQueryParam("hash", h));
-            return query.Run<BitlyResponseImpl<IClicks, ClicksImpl>>();
+                query = hashes.Aggregate(query, (current, h) => current.WithParameter("hash", h));
+            return query.Execute().To<BitlyResponseImpl<IClicks, ClicksImpl>>();
         }
 
         /// <summary>
@@ -132,7 +130,7 @@ namespace Rest4Net.BitLy
         /// <returns>designating whether this is a current bitly.Pro domain</returns>
         public IBitlyResponse<IValidDomain> IsBitlyProDomain(string domain)
         {
-            return Build.SetPath("/v3/bitly_pro_domain").AddQueryParam("domain", domain).Run<BitlyResponseImpl<IValidDomain, ValidDomainImpl>>();
+            return C("/v3/bitly_pro_domain").WithParameter("domain", domain).Execute().To<BitlyResponseImpl<IValidDomain, ValidDomainImpl>>();
         }
 
         /// <summary>
@@ -145,10 +143,10 @@ namespace Rest4Net.BitLy
         /// <returns></returns>
         public IBitlyResponse<ILookup> Lookup(string url, params string[] urls)
         {
-            var query = Build.SetPath("/v3/lookup").AddQueryParam("url", url);
+            var query = C("/v3/lookup").WithParameter("url", url);
             if (urls != null)
-                query = urls.Aggregate(query, (current, u) => current.AddQueryParam("url", u));
-            return query.Run<BitlyResponseImpl<ILookup, LookupImpl>>();
+                query = urls.Aggregate(query, (current, u) => current.WithParameter("url", u));
+            return query.Execute().To<BitlyResponseImpl<ILookup, LookupImpl>>();
         }
 
         /// <summary>
@@ -163,8 +161,8 @@ namespace Rest4Net.BitLy
         /// <returns></returns>
         public IBitlyResponse<IAuthenticate> Authenticate(string xLogin, string xPassword)
         {
-            return Build.SetMethod(RequestType.Post).SetPath("/v3/authenticate").AddQueryParam("x_login", xLogin).AddQueryParam("x_password", xPassword)
-                .Run<BitlyResponseImpl<IAuthenticate, AuthenticateImpl>>();
+            return C("/v3/authenticate", RequestType.Post).WithParameter("x_login", xLogin).WithParameter("x_password", xPassword)
+                .Execute().To<BitlyResponseImpl<IAuthenticate, AuthenticateImpl>>();
         }
 
         /// <summary>
@@ -176,10 +174,10 @@ namespace Rest4Net.BitLy
         /// <returns></returns>
         public IBitlyResponse<IInfo> Info(string shortUrl, params string[] shortUrls)
         {
-            var query = Build.SetPath("/v3/info").AddQueryParam("shortUrl", shortUrl);
+            var query = C("/v3/info").WithParameter("shortUrl", shortUrl);
             if (shortUrls != null)
-                query = shortUrls.Aggregate(query, (current, url) => current.AddQueryParam("shortUrl", url));
-            return query.Run<BitlyResponseImpl<IInfo, InfoImpl>>();
+                query = shortUrls.Aggregate(query, (current, url) => current.WithParameter("shortUrl", url));
+            return query.Execute().To<BitlyResponseImpl<IInfo, InfoImpl>>();
         }
 
         /// <summary>
@@ -191,10 +189,10 @@ namespace Rest4Net.BitLy
         /// <returns></returns>
         public IBitlyResponse<IInfo> InfoWithHashes(string hash, params string[] hashes)
         {
-            var query = Build.SetPath("/v3/info").AddQueryParam("hash", hash);
+            var query = C("/v3/info").WithParameter("hash", hash);
             if (hashes != null)
-                query = hashes.Aggregate(query, (current, h) => current.AddQueryParam("hash", h));
-            return query.Run<BitlyResponseImpl<IInfo, InfoImpl>>();
+                query = hashes.Aggregate(query, (current, h) => current.WithParameter("hash", h));
+            return query.Execute().To<BitlyResponseImpl<IInfo, InfoImpl>>();
         }
     }
 }

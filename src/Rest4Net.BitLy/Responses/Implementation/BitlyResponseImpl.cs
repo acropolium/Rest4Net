@@ -1,8 +1,5 @@
-﻿using Rest4Net;
-
-namespace Rest4Net.BitLy.Responses.Implementation
+﻿namespace Rest4Net.BitLy.Responses.Implementation
 {
-    [RestApiSerializable(true, true)]
     internal class BitlyResponseImpl<TBitlyResponseInterface, TBitlyResponseClass> : IBitlyResponse<TBitlyResponseInterface>
         where TBitlyResponseClass : TBitlyResponseInterface
     {
