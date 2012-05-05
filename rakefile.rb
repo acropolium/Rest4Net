@@ -19,7 +19,7 @@ desc "Compiles solution"
 task :default => [:clean, :compile, :publish, :package]
 
 desc "Compile solution file"
-msbuild :compile do |msb|
+msbuild :compile => [:clean] do |msb|
     msb.properties :configuration => CONFIGURATION
     msb.targets :Clean, :Build
     msb.solution = SOLUTION_FILE
@@ -74,16 +74,30 @@ task :nuget_package => [:publish] do
 end
 
 desc "Pushes the nuget packages in the nuget folder up to the nuget gallery and symbolsource.org. Also publishes the packages into the feeds."
-task :nuget_publish do |task|
+task :nuget_publish => [:nuget_package] do |task|
+	if Kernel.is_windows? == true
+		separator = "\\\\"
+	else
+		separator = "/"
+	end
     nupkgs = FileList["#{OUTPUT}/nuget/*.nupkg"]
     nupkgs.each do |nupkg| 
-        puts "Pushing #{nupkg}"
-        nuget_push = NuGetPush.new
-        nuget_push.command = "tools/nuget/nuget.exe"
-        nuget_push.package = File.expand_path(nupkg)
-        nuget_push.create_only = false
-        nuget_push.execute
+		begin
+			puts "Pushing #{nupkg}"
+			nuget_push = NuGetPush.new
+			nuget_push.command = "tools/nuget/nuget.exe"
+			nuget_push.package = File.expand_path(nupkg).gsub("/", separator)
+			nuget_push.create_only = false
+			nuget_push.execute
+		rescue
+			puts "Skipping #{nupkg}"
+		end
     end
+end
+
+def Kernel.is_windows?
+  processor, platform, *rest = RUBY_PLATFORM.split("-")
+	platform == 'mingw32'
 end
 
 def update_xml(xml_path)
