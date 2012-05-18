@@ -5,4 +5,4 @@ using System.Reflection;
 [assembly: AssemblyCompany("Acropolium")]
 [assembly: AssemblyProduct("Rest4Net")]
 [assembly: AssemblyCopyright("Copyright (C) 2010 Oleksii Glib")]
-[assembly: AssemblyVersion("0.8.2")]
+[assembly: AssemblyVersion("0.9.2")]
