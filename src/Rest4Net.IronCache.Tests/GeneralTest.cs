@@ -8,8 +8,8 @@ namespace Rest4Net.IronCache.Tests
     public class GeneralTest
     {
         #region Configuration values
-        private const string Token = "1_Zyel0wcox-naWO_5B9IuxtyGc";
-        private const string ProjectId = "4fb6434d68a01974c8001780";
+        private const string Token = "";
+        private const string ProjectId = "";
         #endregion
 
         private IronCacheProvider _client;
