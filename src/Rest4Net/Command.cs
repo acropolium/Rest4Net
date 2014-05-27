@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Json;
+using System.Globalization;
 using System.Linq;
 using Rest4Net.CommandUtils.BodyProviders;
 
@@ -50,6 +50,16 @@ namespace Rest4Net
         public Command WithParameter(string key, string value)
         {
             return WithSomething(_parameters, key, value);
+        }
+
+        public Command WithParameter(string key, int value)
+        {
+            return WithParameter(key, value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public Command WithParameter(string key, uint value)
+        {
+            return WithParameter(key, value.ToString(CultureInfo.InvariantCulture));
         }
 
         public Command WithParameter(object parameters)

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BACBEE4C-1D04-42D3-8BA8-3E7B541BEB76}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rest4Net.ePochta</RootNamespace>
+    <AssemblyName>Rest4Net.ePochta</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Json">
+      <HintPath>..\packages\System.Json.4.0.20126.16343\lib\net40\System.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ePochtaProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Responses\Country.cs" />
+    <Compile Include="Responses\Currency.cs" />
+    <Compile Include="Responses\IAddressBook.cs" />
+    <Compile Include="Responses\IBalance.cs" />
+    <Compile Include="Responses\Implementation\SendersImpl.cs" />
+    <Compile Include="Responses\Implementation\SenderImpl.cs" />
+    <Compile Include="Responses\Implementation\SenderRegisterImpl.cs" />
+    <Compile Include="Responses\Implementation\BalanceImpl.cs" />
+    <Compile Include="Responses\Implementation\PhonesImpl.cs" />
+    <Compile Include="Responses\Implementation\SendResultImpl.cs" />
+    <Compile Include="Responses\ISenders.cs" />
+    <Compile Include="Responses\IPhones.cs" />
+    <Compile Include="Responses\IAddressBooks.cs" />
+    <Compile Include="Responses\Implementation\PhoneCreateImpl.cs" />
+    <Compile Include="Responses\Implementation\AddressBookImpl.cs" />
+    <Compile Include="Responses\Implementation\AddressBooksImpl.cs" />
+    <Compile Include="Responses\Implementation\PhoneImpl.cs" />
+    <Compile Include="Responses\Implementation\SuccessImpl.cs" />
+    <Compile Include="Responses\Implementation\SuccessResultImpl.cs" />
+    <Compile Include="Responses\Implementation\AddressbookCreateResultImpl.cs" />
+    <Compile Include="Responses\Implementation\AddressbookCreateImpl.cs" />
+    <Compile Include="Responses\Implementation\ResponsePureImpl.cs" />
+    <Compile Include="Responses\Implementation\ResponseImpl.cs" />
+    <Compile Include="Responses\IPhone.cs" />
+    <Compile Include="Responses\ISender.cs" />
+    <Compile Include="Responses\ISendResult.cs" />
+    <Compile Include="Responses\MessageInfo.cs" />
+    <Compile Include="Responses\MessageType.cs" />
+    <Compile Include="Responses\Phone.cs" />
+    <Compile Include="Responses\ReviewStatus.cs" />
+    <Compile Include="Responses\SmsLifetime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rest4Net\Rest4Net.csproj">
+      <Project>{0ec1d7c7-2a45-49ec-a6b8-6ac6cfd5c74a}</Project>
+      <Name>Rest4Net</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
