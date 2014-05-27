@@ -13,9 +13,9 @@ namespace Rest4Net.ePochta.Tests
         #endregion
 
         #region Test constants
-        private const string Sender = "Acropolium";
-        private const string MyPhone1 = "+380504653313";
-        private const string MyPhone2 = "+380504653313";
+        private const string Sender = "";
+        private const string MyPhone1 = "";
+        private const string MyPhone2 = "";
         private const string TestNewPhone1 = "+380501112233";
         private const string TestNewPhone2 = "+380501122233";
         private const string TestNewPhone3 = "+380501132233";
@@ -104,6 +104,19 @@ namespace Rest4Net.ePochta.Tests
             }
         }
 
+        [Test(Description = "Camaign info verification")]
+        public void VerifyCampaignInfo()
+        {
+            using (var client = new ePochtaProvider(PublicKey, PrivateKey))
+            {
+                var campaigns = client.ListCampaigns();
+                Assert.Greater(campaigns.Count, 0);
+                //var ids = campaigns.Select(x => x.Id).ToArray();
+                //var detailed = client.ListCampaignsMessageStatuses(ids);
+                //detailed = client.ListCampaignsDetailed(ids);
+            }
+        }
+
         [Test(Description = "Sender registration")]
         [Ignore("Ignore as critical")]
         public void SenderRegistration()
@@ -123,6 +136,8 @@ namespace Rest4Net.ePochta.Tests
                 var r = client.SendSms(MyPhone1, new MessageInfo("Test message!", "Acropolium") {AlternativeSender = "Hola!"});
                 Assert.Greater(r.Id, 0);
                 Assert.Greater(r.Price, 0);
+                var stats = client.GetCampaignStatistics(r.Id);
+                Assert.Greater(stats.Count, 0);
             }
         }
     }

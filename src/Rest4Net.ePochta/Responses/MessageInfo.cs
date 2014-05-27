@@ -59,8 +59,7 @@ namespace Rest4Net.ePochta.Responses
                 cmd.WithParameter("sender", Sender)
                     .WithParameter("text", Text)
                     .WithParameter("sms_lifetime", (int) Lifetime)
-                    .WithParameter("datetime",
-                        SendAt != null ? SendAt.Value.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss") : "");
+                    .WithParameter("datetime", SendAt.ToPochtaString(""));
             if (Type != MessageType.Default)
                 c = c.WithParameter("type", (int)Type);
             if (!String.IsNullOrWhiteSpace(AlternativeSender))

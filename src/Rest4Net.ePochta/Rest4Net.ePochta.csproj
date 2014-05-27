@@ -38,16 +38,23 @@
   <ItemGroup>
     <Compile Include="ePochtaProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Responses\CampaignStatus.cs" />
     <Compile Include="Responses\Country.cs" />
     <Compile Include="Responses\Currency.cs" />
+    <Compile Include="Responses\DateUtils.cs" />
     <Compile Include="Responses\IAddressBook.cs" />
     <Compile Include="Responses\IBalance.cs" />
+    <Compile Include="Responses\ICampaignInfo.cs" />
+    <Compile Include="Responses\Implementation\CampaignImpl.cs" />
+    <Compile Include="Responses\Implementation\CampaignInfoImpl.cs" />
     <Compile Include="Responses\Implementation\SendersImpl.cs" />
     <Compile Include="Responses\Implementation\SenderImpl.cs" />
     <Compile Include="Responses\Implementation\SenderRegisterImpl.cs" />
     <Compile Include="Responses\Implementation\BalanceImpl.cs" />
     <Compile Include="Responses\Implementation\PhonesImpl.cs" />
+    <Compile Include="Responses\Implementation\SendPriceImpl.cs" />
     <Compile Include="Responses\Implementation\SendResultImpl.cs" />
+    <Compile Include="Responses\Implementation\SmsDeliveryInfoImpl.cs" />
     <Compile Include="Responses\ISenders.cs" />
     <Compile Include="Responses\IPhones.cs" />
     <Compile Include="Responses\IAddressBooks.cs" />
@@ -63,11 +70,15 @@
     <Compile Include="Responses\Implementation\ResponseImpl.cs" />
     <Compile Include="Responses\IPhone.cs" />
     <Compile Include="Responses\ISender.cs" />
+    <Compile Include="Responses\ISendPrice.cs" />
     <Compile Include="Responses\ISendResult.cs" />
+    <Compile Include="Responses\ICampaign.cs" />
+    <Compile Include="Responses\ISmsDeliveryInfo.cs" />
     <Compile Include="Responses\MessageInfo.cs" />
     <Compile Include="Responses\MessageType.cs" />
     <Compile Include="Responses\Phone.cs" />
     <Compile Include="Responses\ReviewStatus.cs" />
+    <Compile Include="Responses\SmsDeliveryStatus.cs" />
     <Compile Include="Responses\SmsLifetime.cs" />
   </ItemGroup>
   <ItemGroup>

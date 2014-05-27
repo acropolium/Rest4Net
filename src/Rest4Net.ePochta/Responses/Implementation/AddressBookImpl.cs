@@ -40,7 +40,7 @@ namespace Rest4Net.ePochta.Responses.Implementation
 
         public DateTime Created
         {
-            get { return DateTime.ParseExact(creationdate ?? date, "yyyy'-'MM'-'dd' 'HH':'mm':'ss", CultureInfo.InvariantCulture); }
+            get { return (creationdate ?? date).ToPochtaDate(); }
         }
     }
 }

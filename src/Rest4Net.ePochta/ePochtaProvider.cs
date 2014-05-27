@@ -59,7 +59,7 @@ namespace Rest4Net.ePochta
 
         private Command Run(string methodName)
         {
-            return Cmd("/api/sms/3.0/" + methodName)
+            return Cmd("/api/sms/3.0/" + methodName, RequestType.Post)
                 .WithParameter("version", "3.0")
                 .WithParameter("action", methodName)
                 .WithParameter("key", _apiPublicKey);
@@ -470,6 +470,21 @@ namespace Rest4Net.ePochta
         }
 
         /// <summary>
+        /// Calculate price for sending sms to the list of phones from address book
+        /// </summary>
+        /// <param name="addressbookId">Id for the address book to send to</param>
+        /// <param name="message">Message information object</param>
+        /// <returns>Price information</returns>
+        public ISendResult SendSmsBatchEstimate(int addressbookId, MessageInfo message)
+        {
+            return
+                message.FillCommand(Run("checkCampaignPrice").WithParameter("list_id", addressbookId))
+                    .Execute()
+                    .To<ResponseImpl<ISendResult, SendResultImpl>>(CheckForError)
+                    .result;
+        }
+
+        /// <summary>
         /// Send sms to the custom list of phones
         /// </summary>
         /// <param name="message">Message information object</param>
@@ -483,6 +498,165 @@ namespace Rest4Net.ePochta
                     .Execute()
                     .To<ResponseImpl<ISendResult, SendResultImpl>>(CheckForError)
                     .result;
+        }
+
+        /// <summary>
+        /// Calculate price for sending sms to the custom list of phones
+        /// </summary>
+        /// <param name="message">Message information object</param>
+        /// <param name="phone">First custom phone</param>
+        /// <param name="phones">Optional custom phones</param>
+        /// <returns>Price information</returns>
+        public ISendPrice SendSmsBatchEstimate(MessageInfo message, Phone phone, params Phone[] phones)
+        {
+            return
+                message.FillCommand(Run("checkCampaignPriceGroup").WithParameter("phones", PhonesToJson(phone, phones)))
+                    .Execute()
+                    .To<ResponseImpl<ISendPrice, SendPriceImpl>>(CheckForError)
+                    .result;
+        }
+
+        /// <summary>
+        /// Get short statistics on campaign
+        /// </summary>
+        /// <param name="id">Campaign id</param>
+        /// <returns>Short statistics info</returns>
+        public ICampaignInfo GetCampaign(int id)
+        {
+            return
+                Run("getCampaignInfo").WithParameter("id", id)
+                    .Execute()
+                    .To<ResponseImpl<ICampaignInfo, CampaignInfoImpl>>(CheckForError)
+                    .result;
+        }
+
+        /// <summary>
+        /// Cancel campaign processing
+        /// </summary>
+        /// <param name="id">Campaign id</param>
+        /// <returns>Success of the operation</returns>
+        public bool CancelCampaign(int id)
+        {
+            return
+                Run("cancelCampaign")
+                    .WithParameter("id", id)
+                    .Execute()
+                    .To<SuccessResultImpl>(CheckForError)
+                    .result.successful;
+        }
+
+        /// <summary>
+        /// Delete campaign processing
+        /// </summary>
+        /// <param name="id">Campaign id</param>
+        /// <returns>Success of the operation</returns>
+        public bool DeleteCampaign(int id)
+        {
+            return
+                Run("deleteCampaign")
+                    .WithParameter("id", id)
+                    .Execute()
+                    .To<SuccessResultImpl>(CheckForError)
+                    .result.successful;
+        }
+
+        /// <summary>
+        /// Retrieve campaign statistics by each phone
+        /// </summary>
+        /// <param name="id">Campaign id</param>
+        /// <param name="sinceDateTime">Filter only records from date</param>
+        /// <returns>List of delivery information</returns>
+        public List<ISmsDeliveryInfo> GetCampaignStatistics(int id, DateTime? sinceDateTime = null)
+        {
+            var cmd = Run("getCampaignDeliveryStats").WithParameter("id", id);
+            if (sinceDateTime != null)
+                cmd = cmd.WithParameter("datefrom", sinceDateTime.ToPochtaString());
+            return cmd.Execute()
+                .To<ResponsePureImpl<List<SmsDeliveryInfoImpl>>>(RemakeJsonForStats)
+                .result.ConvertAll(x => (ISmsDeliveryInfo) x);
+        }
+
+        private static JsonValue RemakeJsonForStats(JsonValue arg)
+        {
+            var oInitial = CheckForError(arg);
+            if (oInitial == null || !oInitial.ContainsKey("result"))
+                return oInitial;
+            var o = oInitial["result"];
+            if (o == null || !o.ContainsKey("phone") || !o.ContainsKey("sentdate") || !o.ContainsKey("donedate") || !o.ContainsKey("status"))
+                return o;
+
+            var result = new JsonArray();
+            var arrPhones =(JsonArray)( o["phone"]);
+            var arrSentDates =(JsonArray)( o["sentdate"]);
+            var arrDoneDates =(JsonArray)( o["donedate"]);
+            var arrStatuses =(JsonArray)( o["status"]);
+
+            var cnt = arrPhones.Count;
+            for (var i = 0; i < cnt; i++)
+            {
+                result.Add(new JsonObject(
+                    new KeyValuePair<string, JsonValue>("phone", arrPhones[i]),
+                    new KeyValuePair<string, JsonValue>("sentdate", arrSentDates[i]),
+                    new KeyValuePair<string, JsonValue>("donedate", arrDoneDates[i]),
+                    new KeyValuePair<string, JsonValue>("status", arrStatuses[i])
+                    ));
+            }
+            oInitial.SetValue("result", result);
+            return oInitial;
+        }
+
+        /// <summary>
+        /// List all campaigns in the account
+        /// </summary>
+        /// <returns>List of campaigns with short info</returns>
+        public List<ICampaign> ListCampaigns()
+        {
+            return Run("getCampaignList").Execute()
+                .To<ResponsePureImpl<List<CampaignImpl>>>(RemakeJsonForCampaign)
+                .result.ConvertAll(x => (ICampaign)x);
+        }
+
+        private static JsonValue RemakeJsonForCampaign(JsonValue arg)
+        {
+            var oInitial = CheckForError(arg);
+            if (oInitial == null || !oInitial.ContainsKey("result"))
+                return oInitial;
+            var o = oInitial["result"];
+            if (o == null || !o.ContainsKey("id") || !o.ContainsKey("from") || !o.ContainsKey("body") || !o.ContainsKey("status"))
+                return o;
+
+            var result = new JsonArray();
+            var arrIds =(JsonArray)( o["id"]);
+            var arrSenders = (JsonArray)(o["from"]);
+            var arrBodies = (JsonArray)(o["body"]);
+            var arrStatuses =(JsonArray)( o["status"]);
+
+            var cnt = arrIds.Count;
+            for (var i = 0; i < cnt; i++)
+            {
+                result.Add(new JsonObject(
+                    new KeyValuePair<string, JsonValue>("id", arrIds[i]),
+                    new KeyValuePair<string, JsonValue>("from", arrSenders[i]),
+                    new KeyValuePair<string, JsonValue>("body", arrBodies[i]),
+                    new KeyValuePair<string, JsonValue>("status", arrStatuses[i])
+                    ));
+            }
+            oInitial.SetValue("result", result);
+            return oInitial;
+        }
+
+        public JsonValue ListCampaignsMessageStatuses(params int[] ids)
+        {
+            return Run("getcampaigndeliverystatsgroup")
+                .WithParameter("id", String.Join(",", ids))
+                .Execute().ToJson();
+        }
+
+        public JsonValue ListCampaignsDetailed(params int[] ids)
+        {
+            return Run("gettaskinfo")
+                .WithParameter("taskIds", String.Join(",", ids))
+                .Execute().ToJson();
         }
     }
 }

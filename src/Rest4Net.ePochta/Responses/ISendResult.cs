@@ -1,20 +1,10 @@
 ﻿namespace Rest4Net.ePochta.Responses
 {
-    public interface ISendResult
+    public interface ISendResult : ISendPrice
     {
         /// <summary>
         /// Created campaign id
         /// </summary>
         int Id { get; }
-
-        /// <summary>
-        /// Price for the campaign
-        /// </summary>
-        double Price { get; }
-
-        /// <summary>
-        /// Price currency
-        /// </summary>
-        Currency PriceCurrency { get; }
     }
 }
