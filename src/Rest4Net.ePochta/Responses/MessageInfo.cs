@@ -28,8 +28,7 @@ namespace Rest4Net.ePochta.Responses
         public string Text { get; private set; }
 
         /// <summary>
-        /// Alternative sender title
-        /// //TODO: detail
+        /// Alternative sender. Phone number for cheaper alternative networks
         /// </summary>
         public string AlternativeSender { get; set; }
 

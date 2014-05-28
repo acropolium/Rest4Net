@@ -47,6 +47,9 @@
     <Compile Include="Responses\ICampaignInfo.cs" />
     <Compile Include="Responses\Implementation\CampaignImpl.cs" />
     <Compile Include="Responses\Implementation\CampaignInfoImpl.cs" />
+    <Compile Include="Responses\Implementation\PhoneExceptionCreateImpl.cs" />
+    <Compile Include="Responses\Implementation\PhoneExceptionImpl.cs" />
+    <Compile Include="Responses\Implementation\PhoneExceptionsImpl.cs" />
     <Compile Include="Responses\Implementation\SendersImpl.cs" />
     <Compile Include="Responses\Implementation\SenderImpl.cs" />
     <Compile Include="Responses\Implementation\SenderRegisterImpl.cs" />
@@ -55,6 +58,8 @@
     <Compile Include="Responses\Implementation\SendPriceImpl.cs" />
     <Compile Include="Responses\Implementation\SendResultImpl.cs" />
     <Compile Include="Responses\Implementation\SmsDeliveryInfoImpl.cs" />
+    <Compile Include="Responses\IPhoneException.cs" />
+    <Compile Include="Responses\IPhoneExceptions.cs" />
     <Compile Include="Responses\ISenders.cs" />
     <Compile Include="Responses\IPhones.cs" />
     <Compile Include="Responses\IAddressBooks.cs" />

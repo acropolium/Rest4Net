@@ -1,12 +1,12 @@
 ﻿namespace Rest4Net.ePochta.Responses.Implementation
 {
-    internal class PhoneCreateImpl
+    internal class PhoneExceptionCreateImpl
     {
-        public int phone_id;
+        public int exseption_id;
 
         public int Id
         {
-            get { return phone_id; }
+            get { return exseption_id; }
         }
     }
 }

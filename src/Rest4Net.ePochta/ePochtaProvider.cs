@@ -451,7 +451,7 @@ namespace Rest4Net.ePochta
         /// <param name="message">Message information object</param>
         /// <param name="watchdogPhoneNumber">Phone number to control the campaign send-out</param>
         /// <param name="portionSize">The count of sms to send at a time. Use this parameter if you would like to send sms by portions</param>
-        /// <param name="portionInterval">Interval between portions in (TODO: seconds?)</param>
+        /// <param name="portionInterval">Interval between portions in seconds</param>
         /// <returns>New campaign information with id and price</returns>
         public ISendResult SendSmsBatch(int addressbookId, MessageInfo message, string watchdogPhoneNumber = null,
             uint portionSize = 0, uint portionInterval = 0)
@@ -645,6 +645,7 @@ namespace Rest4Net.ePochta
             return oInitial;
         }
 
+        #region Not working
         public JsonValue ListCampaignsMessageStatuses(params int[] ids)
         {
             return Run("getcampaigndeliverystatsgroup")
@@ -657,6 +658,109 @@ namespace Rest4Net.ePochta
             return Run("gettaskinfo")
                 .WithParameter("taskIds", String.Join(",", ids))
                 .Execute().ToJson();
+        }
+        #endregion
+
+        /// <summary>
+        /// Create new exception phone, which will not get sms messages
+        /// </summary>
+        /// <param name="phone">Phone number</param>
+        /// <param name="comment">Optional comment/reason</param>
+        /// <returns>Id for the newly generated exception</returns>
+        public int CreateException(string phone, string comment = null)
+        {
+            var cmd = Run("addPhoneToExceptions").WithParameter("phone", phone);
+            if (!String.IsNullOrWhiteSpace(comment))
+                cmd = cmd.WithParameter("reason", comment);
+            return cmd.Execute().To<ResponsePureImpl<PhoneExceptionCreateImpl>>(CheckForError).result.Id;
+        }
+
+        /// <summary>
+        /// Create new exception phone, which will not get sms messages
+        /// </summary>
+        /// <param name="phoneId">Phone id in ePochta</param>
+        /// <param name="comment">Optional comment/reason</param>
+        /// <returns>Id for the newly generated exception</returns>
+        public int CreateException(int phoneId, string comment = null)
+        {
+            var cmd = Run("addPhoneToExceptions").WithParameter("idPhone", phoneId);
+            if (!String.IsNullOrWhiteSpace(comment))
+                cmd = cmd.WithParameter("reason", comment);
+            return cmd.Execute().To<ResponsePureImpl<PhoneExceptionCreateImpl>>(CheckForError).result.Id;
+        }
+
+        /// <summary>
+        /// Edit exception comment
+        /// </summary>
+        /// <param name="id">Id of the exception to edit</param>
+        /// <param name="comment">New comment/reason</param>
+        /// <returns>Success of the operation</returns>
+        public bool EditException(int id, string comment)
+        {
+            var cmd = Run("editExceptions").WithParameter("idException", id);
+            if (!String.IsNullOrWhiteSpace(comment))
+                cmd = cmd.WithParameter("reason", comment);
+            else
+                return false;
+            return cmd.Execute().To<SuccessResultImpl>(CheckForError).result.successful;
+        }
+
+        /// <summary>
+        /// Get full infor about exception by id
+        /// </summary>
+        /// <param name="id">Id of the exception to get info</param>
+        /// <returns>Full exception info object</returns>
+        public IPhoneException GetException(int id)
+        {
+            return
+                Run("getException")
+                    .WithParameter("idException", id)
+                    .Execute()
+                    .To<ResponseImpl<IPhoneException, PhoneExceptionImpl>>(RemakeJsonForList)
+                    .result;
+        }
+
+        /// <summary>
+        /// List all exceptions
+        /// </summary>
+        /// <param name="offset">Array offset to get elements</param>
+        /// <param name="count">Count of elements to fetch from server</param>
+        /// <returns>List of exception objects with full information</returns>
+        public IPhoneExceptions ListExceptions(uint offset = 0, uint count = 50)
+        {
+            return ListExceptionsFromBook(0, offset, count);
+        }
+
+        /// <summary>
+        /// List all exceptions from address book
+        /// </summary>
+        /// <param name="addressbookId">Address book to filter the list</param>
+        /// <param name="offset">Array offset to get elements</param>
+        /// <param name="count">Count of elements to fetch from server</param>
+        /// <returns>List of exception objects with full information</returns>
+        public IPhoneExceptions ListExceptionsFromBook(int addressbookId, uint offset = 0, uint count = 50)
+        {
+            return ListExceptionsByPattern(null, addressbookId, offset, count);
+        }
+
+        /// <summary>
+        /// List all exceptions filtered by phone
+        /// </summary>
+        /// <param name="phonePattern">Phone number to filter the list of exceptions</param>
+        /// <param name="addressbookId">Address book to filter the list</param>
+        /// <param name="offset">Array offset to get elements</param>
+        /// <param name="count">Count of elements to fetch from server</param>
+        /// <returns>List of exception objects with full information</returns>
+        public IPhoneExceptions ListExceptionsByPattern(string phonePattern, int addressbookId = 0, uint offset = 0, uint count = 50)
+        {
+            var cmd = Run("getException")
+                .WithParameter("from", offset)
+                .WithParameter("offset", count);
+            if (!String.IsNullOrWhiteSpace(phonePattern))
+                cmd = cmd.WithParameter("phone", phonePattern);
+            if (addressbookId > 0)
+                cmd = cmd.WithParameter("idAddressbook", addressbookId);
+            return cmd.Execute().To<ResponseImpl<IPhoneExceptions, PhoneExceptionsImpl>>(RemakeJsonForList).result;
         }
     }
 }
