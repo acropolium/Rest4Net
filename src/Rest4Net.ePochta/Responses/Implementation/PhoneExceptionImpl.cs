@@ -1,4 +1,5 @@
 ﻿using System;
+using Rest4Net.ePochta.Utils;
 
 namespace Rest4Net.ePochta.Responses.Implementation
 {

@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Rest4Net.ePochta.Responses;
 
@@ -7,33 +11,29 @@ namespace Rest4Net.ePochta.Tests
     [TestFixture]
     public class GeneralTest
     {
-        #region Configuration values
-        private const string PublicKey = "24ad38cbd71d3ea035c398604fcd9a38";
-        private const string PrivateKey = "f42e73b3df76daac375f887f974f3035";
-        #endregion
+        private readonly dynamic _a = new ExpandoObject();
 
-        #region Test constants
-        private const string Sender = "";
-        private const string MyPhone1 = "";
-        private const string MyPhone2 = "";
-        private const string TestNewPhone1 = "+380501112233";
-        private const string TestNewPhone2 = "+380501122233";
-        private const string TestNewPhone3 = "+380501132233";
-        private const string TestNewPhone11 = "+380531112233";
-        private const string TestNewPhone12 = "+380531122233";
-        private const string TestNewPhone13 = "+380531132233";
-        private const string TestPhonePersonalization1 = "G1";
-        private const string TestPhonePersonalization2 = "G2";
-        private const string TestPhonePersonalization3 = "G3";
-        private const string TestPhonePersonalization4 = "G4";
-        private const string TestNewAddressbookName = "New book";
-        private const string TestEditedAddressbookName = "Edited book";
-        #endregion
+        [TestFixtureSetUp]
+        public void LoadConfigurationValuesAndConstants()
+        {
+            var configPath = Path.GetFullPath("./../../Assets/Config.xml");
+            if(!File.Exists(configPath))
+                throw new FileNotFoundException("Test configuration file not found. Prepare it from _Config.xml", configPath);
+            var w = (IDictionary<string, object>)_a;
+            var doc = XDocument.Load(configPath);
+            foreach (var item in doc.Descendants("Item"))
+                w[item.Attribute("name").Value] = item.Attribute("value").Value;
+        }
+
+        private ePochtaProvider CreateProvider()
+        {
+            return new ePochtaProvider(_a.PublicKey, _a.PrivateKey);
+        }
 
         [Test(Description = "General verification of all functions")]
         public void GeneralVerification()
         {
-            using (var client = new ePochtaProvider(PublicKey, PrivateKey))
+            using (var client = CreateProvider())
             {
                 var balance = client.GetBalance();
                 Assert.GreaterOrEqual(balance.Amount, 0);
@@ -41,36 +41,36 @@ namespace Rest4Net.ePochta.Tests
                 balance = client.GetBalance(Currency.GBP);
                 Assert.AreEqual(balance.AmountCurrency, Currency.GBP);
 
-                var id = client.CreateAddressbook(TestNewAddressbookName);
+                var id = client.CreateAddressbook((string)_a.TestNewAddressbookName);
                 Assert.Greater(id, 0);
-                var r = client.EditAddressbook(id, TestEditedAddressbookName);
+                var r = client.EditAddressbook(id, (string)_a.TestEditedAddressbookName);
                 Assert.True(r);
                 var ab = client.GetAddressbook(id);
-                Assert.AreEqual(ab.Name, TestEditedAddressbookName);
+                Assert.AreEqual(ab.Name, (string) _a.TestEditedAddressbookName);
 
-                var pid = client.CreatePhoneInAddressbook(id, TestNewPhone1);
+                var pid = client.CreatePhoneInAddressbook(id, (string)_a.TestNewPhone1);
                 Assert.Greater(pid, 0);
-                pid = client.CreatePhoneInAddressbook(id, TestNewPhone2, TestPhonePersonalization1,
-                    TestPhonePersonalization2, TestPhonePersonalization3, TestPhonePersonalization4);
+                pid = client.CreatePhoneInAddressbook(id, (string)_a.TestNewPhone2, (string)_a.TestPhonePersonalization1,
+                    (string)_a.TestPhonePersonalization2, (string)_a.TestPhonePersonalization3, (string)_a.TestPhonePersonalization4);
                 Assert.Greater(pid, 0);
-                pid = client.CreatePhoneInAddressbook(id, TestNewPhone3, TestPhonePersonalization2);
+                pid = client.CreatePhoneInAddressbook(id, (string)_a.TestNewPhone3, (string)_a.TestPhonePersonalization2);
                 Assert.Greater(pid, 0);
 
-                Assert.IsTrue(client.EditPhone(pid, TestNewPhone13));
+                Assert.IsTrue(client.EditPhone(pid, (string)_a.TestNewPhone13));
                 var tempPhone = client.GetPhone(pid);
                 Assert.AreEqual(tempPhone.Variables.Count, 1);
 
                 var phone = client.GetPhone(pid);
                 Assert.Greater(phone.Id, 0);
 
-                Assert.IsTrue(client.CreatePhonesInAddressbook(id, new Phone(TestNewPhone11),
-                    new Phone(TestNewPhone12, TestPhonePersonalization3),
-                    new Phone(TestNewPhone13, TestPhonePersonalization3, TestPhonePersonalization1)));
+                Assert.IsTrue(client.CreatePhonesInAddressbook(id, new Phone((string)_a.TestNewPhone11),
+                    new Phone((string)_a.TestNewPhone12, (string)_a.TestPhonePersonalization3),
+                    new Phone((string)_a.TestNewPhone13, (string)_a.TestPhonePersonalization3, (string)_a.TestPhonePersonalization1)));
 
                 var phones = client.ListPhones();
                 Assert.Greater(phones.Count, 0);
 
-                phones = client.ListPhonesByPattern(TestNewPhone2);
+                phones = client.ListPhonesByPattern(_a.TestNewPhone2);
                 Assert.Greater(phones.Count, 0);
 
                 phones = client.ListPhonesFromBook(id);
@@ -93,7 +93,7 @@ namespace Rest4Net.ePochta.Tests
         [Test(Description = "Sender info verification")]
         public void VerifySenderInfo()
         {
-            using (var client = new ePochtaProvider(PublicKey, PrivateKey))
+            using (var client = CreateProvider())
             {
                 var senderNames = client.ListSenders();
                 Assert.Greater(senderNames.Count, 0);
@@ -107,7 +107,7 @@ namespace Rest4Net.ePochta.Tests
         [Test(Description = "Camaign info verification")]
         public void VerifyCampaignInfo()
         {
-            using (var client = new ePochtaProvider(PublicKey, PrivateKey))
+            using (var client = CreateProvider())
             {
                 var campaigns = client.ListCampaigns();
                 Assert.Greater(campaigns.Count, 0);
@@ -121,9 +121,9 @@ namespace Rest4Net.ePochta.Tests
         [Ignore("Ignore as critical")]
         public void SenderRegistration()
         {
-            using (var client = new ePochtaProvider(PublicKey, PrivateKey))
+            using (var client = CreateProvider())
             {
-                Assert.Greater(client.RequestSenderRegistration(Sender, Country.Ukraine), 0);
+                Assert.Greater(client.RequestSenderRegistration((string)_a.Sender, Country.Ukraine), 0);
             }
         }
 
@@ -131,9 +131,9 @@ namespace Rest4Net.ePochta.Tests
         [Ignore("Ignore as critical")]
         public void SendSmsTest()
         {
-            using (var client = new ePochtaProvider(PublicKey, PrivateKey))
+            using (var client = CreateProvider())
             {
-                var r = client.SendSms(MyPhone1, new MessageInfo("Test message!", "Acropolium") {AlternativeSender = "Hola!"});
+                var r = client.SendSms((string)_a.MyPhone1, new MessageInfo(_a.Message, _a.Sender) { AlternativeSender = _a.AlternativeSender });
                 Assert.Greater(r.Id, 0);
                 Assert.Greater(r.Price, 0);
                 var stats = client.GetCampaignStatistics(r.Id);

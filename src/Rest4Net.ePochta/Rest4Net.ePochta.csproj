@@ -41,7 +41,10 @@
     <Compile Include="Responses\CampaignStatus.cs" />
     <Compile Include="Responses\Country.cs" />
     <Compile Include="Responses\Currency.cs" />
-    <Compile Include="Responses\DateUtils.cs" />
+    <Compile Include="Utils\AtomParkProtocolHttps.cs" />
+    <Compile Include="Utils\AtomParkProtocolHttp.cs" />
+    <Compile Include="Utils\AtomParkUtils.cs" />
+    <Compile Include="Utils\DateUtils.cs" />
     <Compile Include="Responses\IAddressBook.cs" />
     <Compile Include="Responses\IBalance.cs" />
     <Compile Include="Responses\ICampaignInfo.cs" />
@@ -69,7 +72,6 @@
     <Compile Include="Responses\Implementation\PhoneImpl.cs" />
     <Compile Include="Responses\Implementation\SuccessImpl.cs" />
     <Compile Include="Responses\Implementation\SuccessResultImpl.cs" />
-    <Compile Include="Responses\Implementation\AddressbookCreateResultImpl.cs" />
     <Compile Include="Responses\Implementation\AddressbookCreateImpl.cs" />
     <Compile Include="Responses\Implementation\ResponsePureImpl.cs" />
     <Compile Include="Responses\Implementation\ResponseImpl.cs" />
@@ -85,6 +87,8 @@
     <Compile Include="Responses\ReviewStatus.cs" />
     <Compile Include="Responses\SmsDeliveryStatus.cs" />
     <Compile Include="Responses\SmsLifetime.cs" />
+    <Compile Include="Utils\CommandUtils.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rest4Net\Rest4Net.csproj">
@@ -95,6 +99,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

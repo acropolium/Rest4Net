@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Rest4Net.ePochta.Responses
+namespace Rest4Net.ePochta.Utils
 {
     internal static class DateUtils
     {

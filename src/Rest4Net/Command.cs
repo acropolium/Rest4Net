@@ -52,9 +52,24 @@ namespace Rest4Net
             return WithSomething(_parameters, key, value);
         }
 
+        public Command WithContitionParameter(bool condition, string key, string value)
+        {
+            return condition ? WithParameter(key, value) : this;
+        }
+
+        public Command WithParameterIfNotNullOrWhiteSpace(string key, string value)
+        {
+            return WithContitionParameter(!String.IsNullOrWhiteSpace(value), key, value);
+        }
+
         public Command WithParameter(string key, int value)
         {
             return WithParameter(key, value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public Command WithParameterIfGreaterThanZero(string key, int value)
+        {
+            return value <= 0 ? this : WithParameter(key, value);
         }
 
         public Command WithParameter(string key, uint value)

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Json;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Rest4Net.ePochta.Responses;
 using Rest4Net.ePochta.Responses.Implementation;
+using Rest4Net.ePochta.Utils;
 using Rest4Net.Exceptions;
 using Rest4Net.Protocols;
 
@@ -18,41 +15,13 @@ namespace Rest4Net.ePochta
     /// </summary>
     public class ePochtaProvider : RestApiProvider
     {
-        private class CustomProtocol : Http
-        {
-            public CustomProtocol(string host, int port = -1) : base(host, port)
-            {
-            }
-
-            private static string CalculateMd5Hash(string input)
-            {
-                var inputBytes = Encoding.ASCII.GetBytes(input);
-                var hash = MD5.Create().ComputeHash(inputBytes);
-                var sb = new StringBuilder();
-                foreach (var t in hash)
-                    sb.Append(t.ToString("x2"));
-                return sb.ToString();
-            }
-
-            public override CommandResult Execute(Command command)
-            {
-                var parameters = command.Parameters.OrderBy(x => x.Key);
-                var sb = new StringBuilder();
-                foreach (
-                    var parameter in
-                        parameters.Where(parameter => String.CompareOrdinal(parameter.Key, @"userapp") != 0))
-                    sb.Append(parameter.Value);
-                sb.Append(PrivateKey ?? "");
-                return base.Execute(command.WithParameter("sum", CalculateMd5Hash(sb.ToString())));
-            }
-
-            internal string PrivateKey { private get; set; }
-        }
-
         private readonly string _apiPublicKey;
 
-        public ePochtaProvider(string apiPublicKey, string apiPrivateKey)
-            : base(new CustomProtocol(@"atompark.com") {PrivateKey = apiPrivateKey})
+        public ePochtaProvider(string apiPublicKey, string apiPrivateKey, bool useHttps = false)
+            : base(
+                useHttps
+                    ? (BaseProtocol) new AtomParkProtocolHttps(@"atompark.com") {PrivateKey = apiPrivateKey}
+                    : new AtomParkProtocolHttp(@"atompark.com") {PrivateKey = apiPrivateKey})
         {
             _apiPublicKey = apiPublicKey;
         }
@@ -80,10 +49,13 @@ namespace Rest4Net.ePochta
         /// <returns>Id for the newly created address book</returns>
         public int CreateAddressbook(string name, string description = null)
         {
-            var cmd = Run("addAddressbook").WithParameter("name", name);
-            if (!String.IsNullOrWhiteSpace(description))
-                cmd = cmd.WithParameter("description", description);
-            return cmd.Execute().To<AddressbookCreateResultImpl>(CheckForError).result.Id;
+            return
+                Run("addAddressbook")
+                    .WithParameter("name", name)
+                    .WithParameterIfNotNullOrWhiteSpace("description", description)
+                    .Execute()
+                    .To<ResponsePureImpl<AddressbookCreateImpl>>(CheckForError)
+                    .result.Id;
         }
 
         /// <summary>
@@ -95,12 +67,13 @@ namespace Rest4Net.ePochta
         /// <returns></returns>
         public bool EditAddressbook(int id, string newName, string newDescription = null)
         {
-            var cmd = Run("editAddressbook")
-                .WithParameter("idAddressBook", id.ToString(CultureInfo.InvariantCulture))
-                .WithParameter("newName", newName);
-            if (!String.IsNullOrWhiteSpace(newDescription))
-                cmd = cmd.WithParameter("newDescr", newDescription);
-            return cmd.Execute().To<SuccessResultImpl>(CheckForError).result.successful;
+            return Run("editAddressbook")
+                .WithParameter("idAddressBook", id)
+                .WithParameter("newName", newName)
+                .WithParameterIfNotNullOrWhiteSpace("newDescr", newDescription)
+                .Execute()
+                .To<SuccessResultImpl>(CheckForError)
+                .result.successful;
         }
 
         /// <summary>
@@ -110,8 +83,12 @@ namespace Rest4Net.ePochta
         /// <returns>Operation success</returns>
         public bool DeleteAddressbook(int id)
         {
-            var cmd = Run("delAddressbook").WithParameter("idAddressBook", id.ToString(CultureInfo.InvariantCulture));
-            return cmd.Execute().To<SuccessResultImpl>(CheckForError).result.successful;
+            return
+                Run("delAddressbook")
+                    .WithParameter("idAddressBook", id)
+                    .Execute()
+                    .To<SuccessResultImpl>(CheckForError)
+                    .result.successful;
         }
 
         /// <summary>
@@ -121,8 +98,12 @@ namespace Rest4Net.ePochta
         /// <returns>Full information about address book</returns>
         public IAddressBook GetAddressbook(int id)
         {
-            var cmd = Run("getAddressbook").WithParameter("idAddressBook", id.ToString(CultureInfo.InvariantCulture));
-            return cmd.Execute().To<ResponseImpl<IAddressBook, AddressBookImpl>>(CheckForError).result;
+            return
+                Run("getAddressbook")
+                    .WithParameter("idAddressBook", id)
+                    .Execute()
+                    .To<ResponseImpl<IAddressBook, AddressBookImpl>>(CheckForError)
+                    .result;
         }
 
         /// <summary>
@@ -133,10 +114,12 @@ namespace Rest4Net.ePochta
         /// <returns>Full information of many address books</returns>
         public IAddressBooks ListAddressbooks(uint offset = 0, uint count = 50)
         {
-            var cmd = Run("getAddressbook")
-                .WithParameter("from", offset.ToString(CultureInfo.InvariantCulture))
-                .WithParameter("offset", count.ToString(CultureInfo.InvariantCulture));
-            return cmd.Execute().To<ResponseImpl<IAddressBooks, AddressBooksImpl>>(RemakeJsonForList).result;
+            return Run("getAddressbook")
+                .WithParameter("from", offset)
+                .WithParameter("offset", count)
+                .Execute()
+                .To<ResponseImpl<IAddressBooks, AddressBooksImpl>>(RemakeJsonForList)
+                .result;
         }
 
         private static JsonValue RemakeJsonForList(JsonValue arg)
@@ -173,8 +156,12 @@ namespace Rest4Net.ePochta
         /// <returns>Id for the cloned address book</returns>
         public int CloneAddressbook(int id)
         {
-            var cmd = Run("cloneaddressbook").WithParameter("idAddressBook", id.ToString(CultureInfo.InvariantCulture));
-            return cmd.Execute().To<ResponsePureImpl<AddressbookCloneImpl>>(CheckForError).result.Id;
+            return
+                Run("cloneaddressbook")
+                    .WithParameter("idAddressBook", id)
+                    .Execute()
+                    .To<ResponsePureImpl<AddressbookCloneImpl>>(CheckForError)
+                    .result.Id;
         }
 
         /// <summary>
@@ -186,26 +173,14 @@ namespace Rest4Net.ePochta
         /// <returns></returns>
         public int CreatePhoneInAddressbook(int addressbookId, string phone, params string[] variables)
         {
-            var cmd = Run("addPhoneToAddressBook").WithParameter("idAddressBook", addressbookId.ToString(CultureInfo.InvariantCulture)).WithParameter("phone", phone);
-            var vars = Phone.GetVariables(variables);
-            if (!String.IsNullOrWhiteSpace(vars))
-                cmd = cmd.WithParameter("variables", vars);
-            return cmd.Execute().To<ResponsePureImpl<PhoneCreateImpl>>(CheckForError).result.Id;
-        }
-
-        private string PhonesToJson(Phone phone, Phone[] phones)
-        {
-            var items = new List<Phone> { phone };
-            items.AddRange(phones ?? new Phone[0]);
-            var array = new JsonArray();
-            foreach (var item in items)
-            {
-                var itm = new JsonArray { new JsonPrimitive(item.PhoneNumber) };
-                if (!String.IsNullOrWhiteSpace(item.Variables))
-                    itm.Add(new JsonPrimitive(item.Variables));
-                array.Add(itm);
-            }
-            return array.ToString();
+            return
+                Run("addPhoneToAddressBook")
+                    .WithParameter("idAddressBook", addressbookId)
+                    .WithParameter("phone", phone)
+                    .WithParameterIfNotNullOrWhiteSpace("variables", Phone.GetVariables(variables))
+                    .Execute()
+                    .To<ResponsePureImpl<PhoneCreateImpl>>(CheckForError)
+                    .result.Id;
         }
 
         /// <summary>
@@ -217,13 +192,12 @@ namespace Rest4Net.ePochta
         /// <returns></returns>
         public bool CreatePhonesInAddressbook(int addressbookId, Phone phone, params Phone[] phones)
         {
-            
-
-            var cmd =
-                Run("addPhoneToAddressBook")
-                    .WithParameter("idAddressBook", addressbookId.ToString(CultureInfo.InvariantCulture))
-                    .WithParameter("data", PhonesToJson(phone, phones));
-            return cmd.Execute().To<SuccessResultImpl>(CheckForError).result.successful;
+            return Run("addPhoneToAddressBook")
+                .WithParameter("idAddressBook", addressbookId)
+                .WithParameter("data", AtomParkUtils.PhonesToJson(phone, phones))
+                .Execute()
+                .To<SuccessResultImpl>(CheckForError)
+                .result.successful;
         }
 
         /// <summary>
@@ -233,8 +207,12 @@ namespace Rest4Net.ePochta
         /// <returns>Full information about phone</returns>
         public IPhone GetPhone(int id)
         {
-            var cmd = Run("getPhoneFromAddressBook").WithParameter("idPhone", id);
-            return cmd.Execute().To<ResponseImpl<IPhone, PhoneImpl>>(CheckForError).result;
+            return
+                Run("getPhoneFromAddressBook")
+                    .WithParameter("idPhone", id)
+                    .Execute()
+                    .To<ResponseImpl<IPhone, PhoneImpl>>(CheckForError)
+                    .result;
         }
 
         /// <summary>
@@ -270,14 +248,14 @@ namespace Rest4Net.ePochta
         /// <returns>List of phones object</returns>
         public IPhones ListPhonesByPattern(string phonePattern, int addressbookId = 0, uint offset = 0, uint count = 50)
         {
-            var cmd = Run("getPhoneFromAddressBook")
+            return Run("getPhoneFromAddressBook")
                 .WithParameter("from", offset)
-                .WithParameter("offset", count);
-            if (!String.IsNullOrWhiteSpace(phonePattern))
-                cmd = cmd.WithParameter("phone", phonePattern);
-            if (addressbookId > 0)
-                cmd = cmd.WithParameter("idAddressBook", addressbookId);
-            return cmd.Execute().To<ResponseImpl<IPhones, PhonesImpl>>(RemakeJsonForList).result;
+                .WithParameter("offset", count)
+                .WithParameterIfNotNullOrWhiteSpace("phone", phonePattern)
+                .WithParameterIfGreaterThanZero("idAddressBook", addressbookId)
+                .Execute()
+                .To<ResponseImpl<IPhones, PhonesImpl>>(RemakeJsonForList)
+                .result;
         }
 
         /// <summary>
@@ -289,13 +267,10 @@ namespace Rest4Net.ePochta
         /// <returns></returns>
         public bool EditPhone(int id, string newPhone, params string[] newVariables)
         {
-            var cmd = Run("editPhone")
-                    .WithParameter("idPhone", id)
-                    .WithParameter("phone", newPhone);
-            var variables = Phone.GetVariables(newVariables);
-            if (!String.IsNullOrWhiteSpace(variables))
-                cmd = cmd.WithParameter("variables", variables);
-            return cmd.Execute()
+            return Run("editPhone")
+                .WithParameter("idPhone", id)
+                .WithParameter("phone", newPhone)
+                .WithParameterIfNotNullOrWhiteSpace("variables", Phone.GetVariables(newVariables)).Execute()
                 .To<SuccessResultImpl>(CheckForError)
                 .result.successful;
         }
@@ -362,10 +337,13 @@ namespace Rest4Net.ePochta
         /// <returns>Balance information</returns>
         public IBalance GetBalance(Currency? currency = null)
         {
-            var cmd = Run("getUserBalance");
-            if (currency != null)
-                cmd = cmd.WithParameter("currency", currency.Value.ToString());
-            return cmd.Execute().To<ResponseImpl<IBalance, BalanceImpl>>(CheckForError).result;
+            return
+                Run("getUserBalance")
+                    .WithContitionParameter(currency != null, "currency",
+                        (currency == null) ? null : currency.Value.ToString())
+                    .Execute()
+                    .To<ResponseImpl<IBalance, BalanceImpl>>(CheckForError)
+                    .result;
         }
 
         /// <summary>
@@ -426,7 +404,10 @@ namespace Rest4Net.ePochta
         {
             return Run("getSenderStatus")
                 .WithParameter("from", offset)
-                .WithParameter("offset", count).Execute().To<ResponseImpl<ISenders, SendersImpl>>(RemakeJsonForList).result;
+                .WithParameter("offset", count)
+                .Execute()
+                .To<ResponseImpl<ISenders, SendersImpl>>(RemakeJsonForList)
+                .result;
         }
 
         /// <summary>
@@ -456,14 +437,12 @@ namespace Rest4Net.ePochta
         public ISendResult SendSmsBatch(int addressbookId, MessageInfo message, string watchdogPhoneNumber = null,
             uint portionSize = 0, uint portionInterval = 0)
         {
-            var cmd = Run("createCampaign")
-                .WithParameter("list_id", addressbookId)
-                .WithParameter("batch", portionSize)
-                .WithParameter("batchinterval", portionInterval);
-            if (!String.IsNullOrWhiteSpace(watchdogPhoneNumber))
-                cmd.WithParameter("control_phone", watchdogPhoneNumber);
             return
-                message.FillCommand(cmd)
+                message.FillCommand(Run("createCampaign")
+                    .WithParameter("list_id", addressbookId)
+                    .WithParameter("batch", portionSize)
+                    .WithParameter("batchinterval", portionInterval)
+                    .WithParameterIfNotNullOrWhiteSpace("control_phone", watchdogPhoneNumber))
                     .Execute()
                     .To<ResponseImpl<ISendResult, SendResultImpl>>(CheckForError)
                     .result;
@@ -494,7 +473,7 @@ namespace Rest4Net.ePochta
         public ISendResult SendSmsBatch(MessageInfo message, Phone phone, params Phone[] phones)
         {
             return
-                message.FillCommand(Run("sendsmsgroup").WithParameter("phones", PhonesToJson(phone, phones)))
+                message.FillCommand(Run("sendsmsgroup").WithParameter("phones", AtomParkUtils.PhonesToJson(phone, phones)))
                     .Execute()
                     .To<ResponseImpl<ISendResult, SendResultImpl>>(CheckForError)
                     .result;
@@ -510,7 +489,7 @@ namespace Rest4Net.ePochta
         public ISendPrice SendSmsBatchEstimate(MessageInfo message, Phone phone, params Phone[] phones)
         {
             return
-                message.FillCommand(Run("checkCampaignPriceGroup").WithParameter("phones", PhonesToJson(phone, phones)))
+                message.FillCommand(Run("checkCampaignPriceGroup").WithParameter("phones", AtomParkUtils.PhonesToJson(phone, phones)))
                     .Execute()
                     .To<ResponseImpl<ISendPrice, SendPriceImpl>>(CheckForError)
                     .result;
@@ -572,37 +551,8 @@ namespace Rest4Net.ePochta
             if (sinceDateTime != null)
                 cmd = cmd.WithParameter("datefrom", sinceDateTime.ToPochtaString());
             return cmd.Execute()
-                .To<ResponsePureImpl<List<SmsDeliveryInfoImpl>>>(RemakeJsonForStats)
+                .To<ResponsePureImpl<List<SmsDeliveryInfoImpl>>>(ConvertAtomParkArrayedResult)
                 .result.ConvertAll(x => (ISmsDeliveryInfo) x);
-        }
-
-        private static JsonValue RemakeJsonForStats(JsonValue arg)
-        {
-            var oInitial = CheckForError(arg);
-            if (oInitial == null || !oInitial.ContainsKey("result"))
-                return oInitial;
-            var o = oInitial["result"];
-            if (o == null || !o.ContainsKey("phone") || !o.ContainsKey("sentdate") || !o.ContainsKey("donedate") || !o.ContainsKey("status"))
-                return o;
-
-            var result = new JsonArray();
-            var arrPhones =(JsonArray)( o["phone"]);
-            var arrSentDates =(JsonArray)( o["sentdate"]);
-            var arrDoneDates =(JsonArray)( o["donedate"]);
-            var arrStatuses =(JsonArray)( o["status"]);
-
-            var cnt = arrPhones.Count;
-            for (var i = 0; i < cnt; i++)
-            {
-                result.Add(new JsonObject(
-                    new KeyValuePair<string, JsonValue>("phone", arrPhones[i]),
-                    new KeyValuePair<string, JsonValue>("sentdate", arrSentDates[i]),
-                    new KeyValuePair<string, JsonValue>("donedate", arrDoneDates[i]),
-                    new KeyValuePair<string, JsonValue>("status", arrStatuses[i])
-                    ));
-            }
-            oInitial.SetValue("result", result);
-            return oInitial;
         }
 
         /// <summary>
@@ -612,48 +562,24 @@ namespace Rest4Net.ePochta
         public List<ICampaign> ListCampaigns()
         {
             return Run("getCampaignList").Execute()
-                .To<ResponsePureImpl<List<CampaignImpl>>>(RemakeJsonForCampaign)
+                .To<ResponsePureImpl<List<CampaignImpl>>>(ConvertAtomParkArrayedResult)
                 .result.ConvertAll(x => (ICampaign)x);
         }
 
-        private static JsonValue RemakeJsonForCampaign(JsonValue arg)
+        private static JsonValue ConvertAtomParkArrayedResult(JsonValue input)
         {
-            var oInitial = CheckForError(arg);
-            if (oInitial == null || !oInitial.ContainsKey("result"))
-                return oInitial;
-            var o = oInitial["result"];
-            if (o == null || !o.ContainsKey("id") || !o.ContainsKey("from") || !o.ContainsKey("body") || !o.ContainsKey("status"))
-                return o;
-
-            var result = new JsonArray();
-            var arrIds =(JsonArray)( o["id"]);
-            var arrSenders = (JsonArray)(o["from"]);
-            var arrBodies = (JsonArray)(o["body"]);
-            var arrStatuses =(JsonArray)( o["status"]);
-
-            var cnt = arrIds.Count;
-            for (var i = 0; i < cnt; i++)
-            {
-                result.Add(new JsonObject(
-                    new KeyValuePair<string, JsonValue>("id", arrIds[i]),
-                    new KeyValuePair<string, JsonValue>("from", arrSenders[i]),
-                    new KeyValuePair<string, JsonValue>("body", arrBodies[i]),
-                    new KeyValuePair<string, JsonValue>("status", arrStatuses[i])
-                    ));
-            }
-            oInitial.SetValue("result", result);
-            return oInitial;
+            return input.ConvertArrayedResult(CheckForError);
         }
 
         #region Not working
-        public JsonValue ListCampaignsMessageStatuses(params int[] ids)
+        private JsonValue ListCampaignsMessageStatuses(params int[] ids)
         {
             return Run("getcampaigndeliverystatsgroup")
                 .WithParameter("id", String.Join(",", ids))
                 .Execute().ToJson();
         }
 
-        public JsonValue ListCampaignsDetailed(params int[] ids)
+        private JsonValue ListCampaignsDetailed(params int[] ids)
         {
             return Run("gettaskinfo")
                 .WithParameter("taskIds", String.Join(",", ids))
@@ -669,10 +595,13 @@ namespace Rest4Net.ePochta
         /// <returns>Id for the newly generated exception</returns>
         public int CreateException(string phone, string comment = null)
         {
-            var cmd = Run("addPhoneToExceptions").WithParameter("phone", phone);
-            if (!String.IsNullOrWhiteSpace(comment))
-                cmd = cmd.WithParameter("reason", comment);
-            return cmd.Execute().To<ResponsePureImpl<PhoneExceptionCreateImpl>>(CheckForError).result.Id;
+            return
+                Run("addPhoneToExceptions")
+                    .WithParameter("phone", phone)
+                    .WithParameterIfNotNullOrWhiteSpace("reason", comment)
+                    .Execute()
+                    .To<ResponsePureImpl<PhoneExceptionCreateImpl>>(CheckForError)
+                    .result.Id;
         }
 
         /// <summary>
@@ -683,10 +612,13 @@ namespace Rest4Net.ePochta
         /// <returns>Id for the newly generated exception</returns>
         public int CreateException(int phoneId, string comment = null)
         {
-            var cmd = Run("addPhoneToExceptions").WithParameter("idPhone", phoneId);
-            if (!String.IsNullOrWhiteSpace(comment))
-                cmd = cmd.WithParameter("reason", comment);
-            return cmd.Execute().To<ResponsePureImpl<PhoneExceptionCreateImpl>>(CheckForError).result.Id;
+            return
+                Run("addPhoneToExceptions")
+                    .WithParameter("idPhone", phoneId)
+                    .WithParameterIfNotNullOrWhiteSpace("reason", comment)
+                    .Execute()
+                    .To<ResponsePureImpl<PhoneExceptionCreateImpl>>(CheckForError)
+                    .result.Id;
         }
 
         /// <summary>
@@ -697,12 +629,15 @@ namespace Rest4Net.ePochta
         /// <returns>Success of the operation</returns>
         public bool EditException(int id, string comment)
         {
-            var cmd = Run("editExceptions").WithParameter("idException", id);
-            if (!String.IsNullOrWhiteSpace(comment))
-                cmd = cmd.WithParameter("reason", comment);
-            else
+            if (String.IsNullOrWhiteSpace(comment))
                 return false;
-            return cmd.Execute().To<SuccessResultImpl>(CheckForError).result.successful;
+            return
+                Run("editExceptions")
+                    .WithParameter("idException", id)
+                    .WithParameter("reason", comment)
+                    .Execute()
+                    .To<SuccessResultImpl>(CheckForError)
+                    .result.successful;
         }
 
         /// <summary>
@@ -753,14 +688,14 @@ namespace Rest4Net.ePochta
         /// <returns>List of exception objects with full information</returns>
         public IPhoneExceptions ListExceptionsByPattern(string phonePattern, int addressbookId = 0, uint offset = 0, uint count = 50)
         {
-            var cmd = Run("getException")
+            return Run("getException")
                 .WithParameter("from", offset)
-                .WithParameter("offset", count);
-            if (!String.IsNullOrWhiteSpace(phonePattern))
-                cmd = cmd.WithParameter("phone", phonePattern);
-            if (addressbookId > 0)
-                cmd = cmd.WithParameter("idAddressbook", addressbookId);
-            return cmd.Execute().To<ResponseImpl<IPhoneExceptions, PhoneExceptionsImpl>>(RemakeJsonForList).result;
+                .WithParameter("offset", count)
+                .WithParameterIfNotNullOrWhiteSpace("phone", phonePattern)
+                .WithParameterIfGreaterThanZero("idAddressbook", addressbookId)
+                .Execute()
+                .To<ResponseImpl<IPhoneExceptions, PhoneExceptionsImpl>>(RemakeJsonForList)
+                .result;
         }
     }
 }

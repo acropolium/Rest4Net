@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Items>
+  <Item name="PublicKey" value="your-public-key" />
+  <Item name="PrivateKey" value="your-private-key" />
+  <Item name="Sender" value="your-sender-name" />
+  <Item name="MyPhone1" value="test-phone-number-to-receive-sms" />
+  <Item name="MyPhone2" value="" />
+  <Item name="TestNewPhone1" value="+380501112233" />
+  <Item name="TestNewPhone2" value="+380501122233" />
+  <Item name="TestNewPhone3" value="+380501132233" />
+  <Item name="TestNewPhone11" value="+380501113333" />
+  <Item name="TestNewPhone12" value="+380501123333" />
+  <Item name="TestNewPhone13" value="+380501133333" />
+  <Item name="TestPhonePersonalization1" value="G1" />
+  <Item name="TestPhonePersonalization2" value="G2" />
+  <Item name="TestPhonePersonalization3" value="G3" />
+  <Item name="TestPhonePersonalization4" value="G4" />
+  <Item name="TestNewAddressbookName" value="New test book" />
+  <Item name="TestEditedAddressbookName" value="Edited test book" />
+  <Item name="Message" value="Hello from test!!!" />
+  <Item name="AlternativeSender" value="Alternative" />
+</Items>
