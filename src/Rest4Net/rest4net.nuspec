@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>Rest4Net</id>
-    <version>0.9.2</version>
+    <version>0.9.9</version>
     <authors>Oleksii Glib</authors>
     <owners>Oleksii Glib</owners>
     <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
     <projectUrl>https://github.com/acropolium/Rest4Net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library to develop rest service accessors smoothly</description>
-    <copyright>Copyright 2010-2012</copyright>
+    <copyright>Copyright 2010-2014</copyright>
 	<dependencies>
       <dependency id="System.Json" />
     </dependencies>
