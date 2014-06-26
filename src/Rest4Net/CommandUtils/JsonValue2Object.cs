@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Json;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace Rest4Net.CommandUtils
 {
     internal static class JsonValue2Object
     {
-        public static T ConvertTo<T>(this JsonValue value)
+        public static T ConvertTo<T>(this JToken value)
         {
             return (T)Convert(typeof (T), value);
         }
@@ -31,18 +31,18 @@ namespace Rest4Net.CommandUtils
             return KeysCheck(n1, n2);
         }
 
-        private static object Convert(Type resultType, JsonValue value)
+        private static object Convert(Type resultType, JToken value)
         {
             if (value == null)
                 return null;
-            var vt = value.GetType();
-            if (vt == typeof(JsonObject))
+            var vObject = value as JObject;
+            if (vObject != null)
             {
                 var o = Activator.CreateInstance(resultType);
                 foreach (var field in resultType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
                 {
                     var fn = field.Name;
-                    foreach (var v in value.Where(v => KeysAreEqual(fn, v.Key)))
+                    foreach (var v in vObject.Properties().Where(v => KeysAreEqual(fn, v.Name)))
                     {
                         field.SetValue(o, Convert(field.FieldType, v.Value));
                         break;
@@ -50,27 +50,32 @@ namespace Rest4Net.CommandUtils
                 }
                 return o;
             }
-            if (vt == typeof(JsonPrimitive))
+            var vValue = value as JValue;
+            if (vValue != null)
             {
-                object obj;
-                if (value.TryReadAs(resultType, out obj))
-                    return obj;
+                try
+                {
+                    return System.Convert.ChangeType(vValue.Value, resultType);
+                }
+                // ReSharper disable once EmptyGeneralCatchClause
+                catch { }
                 if (resultType == typeof(bool) && value.ToString() == "1")
                     return true;
             }
-            if (vt == typeof(JsonArray))
+            var vArray = value as JArray;
+            if (vArray != null)
             {
                 if (resultType.IsGenericType && typeof(List<>) == resultType.GetGenericTypeDefinition())
                 {
                     var type = resultType.GetGenericArguments()[0];
                     var o = Activator.CreateInstance(resultType);
                     var mi = resultType.GetMethod("Add");
-                    foreach (var item in value)
+                    foreach (var item in vArray)
                     {
                         mi.Invoke(o,
                                   new[]
                                       {
-                                          Convert(type, item.Value)
+                                          Convert(type, item)
                                       });
                     }
                     return o;

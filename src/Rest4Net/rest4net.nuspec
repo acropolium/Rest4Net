@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Rest4Net</id>
-    <version>0.9.9</version>
+    <version>1.0.0</version>
     <authors>Oleksii Glib</authors>
     <owners>Oleksii Glib</owners>
     <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
@@ -11,7 +11,7 @@
     <description>Library to develop rest service accessors smoothly</description>
     <copyright>Copyright 2010-2014</copyright>
 	<dependencies>
-      <dependency id="System.Json" />
+      <dependency id="Newtonsoft.Json" version="[6.0,7.0)" />
     </dependencies>
     <tags>rest api</tags>
   </metadata>

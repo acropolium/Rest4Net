@@ -1,4 +1,5 @@
-﻿using System.Json;
+﻿using System.Linq;
+using Newtonsoft.Json.Linq;
 using Rest4Net.Exceptions;
 using Rest4Net.Protocols;
 
@@ -41,12 +42,13 @@ namespace Rest4Net.GoogleCustomSearch
             return cmd.Execute().To<SearchResult>(CheckForError);
         }
 
-        private static JsonValue CheckForError(JsonValue arg)
+        private static JToken CheckForError(JToken arg)
         {
-            if (arg == null || !arg.ContainsKey("error"))
+            var result = arg as JObject;
+            if (result == null || result.Properties().All(x => x.Name != "error"))
                 return arg;
-            var e = arg["error"];
-            throw new ResultException(e["message"].ReadAs<string>(), e["code"].ReadAs<int>(), e);
+            var e = result["error"];
+            throw new ResultException(e["message"].Value<string>(), e["code"].Value<int>(), e);
         }
     }
 }

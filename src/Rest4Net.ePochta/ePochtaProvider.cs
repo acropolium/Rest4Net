@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Json;
+using Newtonsoft.Json.Linq;
 using Rest4Net.ePochta.Responses;
 using Rest4Net.ePochta.Responses.Implementation;
 using Rest4Net.ePochta.Utils;
@@ -13,6 +13,7 @@ namespace Rest4Net.ePochta
     /// This provider allows to access ePochta API through REST API as described here:
     /// http://www.epochta.ru/products/sms/v3.php
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class ePochtaProvider : RestApiProvider
     {
         private readonly string _apiPublicKey;
@@ -34,11 +35,11 @@ namespace Rest4Net.ePochta
                 .WithParameter("key", _apiPublicKey);
         }
 
-        private static JsonValue CheckForError(JsonValue arg)
+        private static JToken CheckForError(JToken arg)
         {
-            if (arg == null || !arg.ContainsKey("error"))
+            if (arg == null || arg["error"] == null)
                 return arg;
-            throw new ResultException(arg["error"].ReadAs<string>(), arg["code"].ReadAs<int>(), arg);
+            throw new ResultException(arg["error"].Value<string>(), arg["code"].Value<int>(), arg);
         }
 
         /// <summary>
@@ -122,30 +123,30 @@ namespace Rest4Net.ePochta
                 .result;
         }
 
-        private static JsonValue RemakeJsonForList(JsonValue arg)
+        private static JToken RemakeJsonForList(JToken arg)
         {
             var oInitial = CheckForError(arg);
-            if (oInitial == null || !oInitial.ContainsKey("result"))
+            if (oInitial == null || oInitial["result"] == null)
                 return oInitial;
             var o = oInitial["result"];
-            if (o == null || !o.ContainsKey("fields") || !o.ContainsKey("data"))
+            if (o == null || o["fields"] == null || o["data"] == null)
                 return o;
             var fieldsList = new List<string>();
-            var arr = (JsonArray)(o["fields"]);
+            var arr = (JArray)(o["fields"]);
             foreach (var item in arr)
-                fieldsList.Add(item.ReadAs<string>());
-            arr = (JsonArray)(o["data"]);
-            var result = new JsonArray();
+                fieldsList.Add(item.Value<string>());
+            arr = (JArray)(o["data"]);
+            var result = new JArray();
             foreach (var item in arr)
             {
-                var itm = (JsonArray) item;
+                var itm = (JArray) item;
                 var cnt = itm.Count;
-                var obj = new JsonObject();
+                var obj = new JObject();
                 for (var i = 0; i < cnt; i++)
-                    obj.SetValue(fieldsList[i], itm[i]);
+                    obj[fieldsList[i]] = itm[i];
                 result.Add(obj);
             }
-            o.SetValue("items", result);
+            o["items"] = result;
             return oInitial;
         }
 
@@ -566,20 +567,20 @@ namespace Rest4Net.ePochta
                 .result.ConvertAll(x => (ICampaign)x);
         }
 
-        private static JsonValue ConvertAtomParkArrayedResult(JsonValue input)
+        private static JToken ConvertAtomParkArrayedResult(JToken input)
         {
             return input.ConvertArrayedResult(CheckForError);
         }
 
         #region Not working
-        private JsonValue ListCampaignsMessageStatuses(params int[] ids)
+        private JToken ListCampaignsMessageStatuses(params int[] ids)
         {
             return Run("getcampaigndeliverystatsgroup")
                 .WithParameter("id", String.Join(",", ids))
                 .Execute().ToJson();
         }
 
-        private JsonValue ListCampaignsDetailed(params int[] ids)
+        private JToken ListCampaignsDetailed(params int[] ids)
         {
             return Run("gettaskinfo")
                 .WithParameter("taskIds", String.Join(",", ids))

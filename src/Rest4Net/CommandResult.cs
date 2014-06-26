@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rest4Net.CommandUtils;
 
 namespace Rest4Net
@@ -9,11 +10,15 @@ namespace Rest4Net
     public class CommandResult : IDisposable
     {
         private readonly Stream _dataStream;
+        private readonly TextReader _textReader;
+        private readonly JsonTextReader _jsonTextReader;
         private readonly IDictionary<string, string> _metas = new Dictionary<string, string>();
 
         public CommandResult(Stream dataStream)
         {
             _dataStream = dataStream;
+            _textReader = new StreamReader(_dataStream);
+            _jsonTextReader = new JsonTextReader(_textReader);
         }
 
         public IDictionary<string, string> Metadata
@@ -26,14 +31,15 @@ namespace Rest4Net
             return _dataStream;
         }
 
-        public JsonValue ToJson()
+        public JToken ToJson()
         {
-            return JsonValue.Load(_dataStream);
+            return JToken.Load(_jsonTextReader);
         }
 
         public object ToObject()
         {
-            return ToJson().AsDynamic();
+            dynamic d = ToJson();
+            return d;
         }
 
         public override string ToString()
@@ -42,7 +48,7 @@ namespace Rest4Net
                 return r.Read(_dataStream);
         }
 
-        public T To<T>(Func<JsonValue, JsonValue> prepareJson = null)
+        public T To<T>(Func<JToken, JToken> prepareJson = null)
         {
             var json = ToJson();
             if (prepareJson != null)
@@ -52,6 +58,10 @@ namespace Rest4Net
         
         public void Dispose()
         {
+            if (_jsonTextReader != null)
+                _jsonTextReader.Close();
+            if (_textReader != null)
+                _textReader.Dispose();
             if (_dataStream != null)
                 _dataStream.Dispose();
         }

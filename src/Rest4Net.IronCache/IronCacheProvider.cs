@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Json;
+using Newtonsoft.Json.Linq;
 using Rest4Net.Exceptions;
 using Rest4Net.IronCache.Responses.Implementation;
 using Rest4Net.Protocols;
@@ -26,9 +26,9 @@ namespace Rest4Net.IronCache
                 .WithHeader("Authorization", String.Format("OAuth {0}", _token));
         }
 
-        private static JsonValue JsonPreparer(JsonValue input)
+        private static JToken JsonPreparer(JToken input)
         {
-            return input.GetType() != typeof(JsonArray) ? input : new JsonObject(new KeyValuePair<string, JsonValue>("data", input));
+            return input as JArray == null ? input : new JObject { { "data", input as JArray } };
         }
 
         protected Command BuildWithPath(string path, RequestType type = RequestType.Get)
@@ -54,33 +54,33 @@ namespace Rest4Net.IronCache
 
         public bool Put(string cacheName, string key, string value, int expiresIn = 604800, bool replace = false, bool add = false)
         {
-            var json = new JsonObject(new KeyValuePair<string, JsonValue>("body", value));
+            var json = new JObject {{"body", value}};
             if (expiresIn != 604800)
-                json.Add(new KeyValuePair<string, JsonValue>("expires_in", expiresIn));
+                json.Add("expires_in", expiresIn);
             if (replace)
-                json.Add(new KeyValuePair<string, JsonValue>("replace", true));
+                json.Add("replace", true);
             if (add)
-                json.Add(new KeyValuePair<string, JsonValue>("add", true));
+                json.Add("add", true);
             return RunInfo("/" + cacheName + "/items/" + key, RequestType.Put, json.ToString()).Message == "Stored.";
         }
 
         public bool Put(string cacheName, string key, int value, int expiresIn = 604800, bool replace = false, bool add = false)
         {
-            var json = new JsonObject(new KeyValuePair<string, JsonValue>("body", value));
+            var json = new JObject { { "body", value } };
             if (expiresIn != 604800)
-                json.Add(new KeyValuePair<string, JsonValue>("expires_in", expiresIn));
+                json.Add("expires_in", expiresIn);
             if (replace)
-                json.Add(new KeyValuePair<string, JsonValue>("replace", true));
+                json.Add("replace", true);
             if (add)
-                json.Add(new KeyValuePair<string, JsonValue>("add", true));
+                json.Add("add", true);
             return RunInfo("/" + cacheName + "/items/" + key, RequestType.Put, json.ToString()).Message == "Stored.";
         }
 
         public int Increment(string cacheName, string key, int amount)
         {
-            var json = new JsonObject(new KeyValuePair<string, JsonValue>("amount", amount));
+            var json = new JObject {{"amount", amount}};
             var result = RunInfo("/" + cacheName + "/items/" + key + "/increment", RequestType.Post, json.ToString());
-            var r = 0;
+            int r;
             if (result.Message != "Added" || result.Value == null || !Int32.TryParse(result.Value, out r))
                 throw new Rest4NetException(result.Message, null);
             return r;

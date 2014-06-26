@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Json;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using Rest4Net.IronMq.Responses.Implementation;
 using Rest4Net.Protocols;
 
@@ -27,9 +27,9 @@ namespace Rest4Net.IronMq
                 .WithHeader("Authorization", String.Format("OAuth {0}", _token));
         }
 
-        private static JsonValue JsonPreparer(JsonValue input)
+        private static JToken JsonPreparer(JToken input)
         {
-            return input.GetType() != typeof(JsonArray) ? input : new JsonObject(new KeyValuePair<string, JsonValue>("data", input));
+            return input as JArray == null ? input : new JObject { { "data", input as JArray } };
         }
 
         protected Command BuildWithPath(string path, RequestType type = RequestType.Get)
