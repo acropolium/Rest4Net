@@ -39,7 +39,7 @@ namespace Rest4Net.Protocols
 			return new Uri(sb.ToString());
 		}
 
-		private HttpWebRequest CreateRequest(Uri uri, Command cmd)
+		private static HttpWebRequest CreateRequest(Uri uri, Command cmd)
 		{
 			var request = (HttpWebRequest)WebRequest.Create(uri);
 			request.Method = cmd.Type.ToString().ToUpper();
@@ -49,12 +49,17 @@ namespace Rest4Net.Protocols
 			return request;
 		}
 
+        protected virtual HttpWebRequest RequestBeforeBodySend(HttpWebRequest request)
+        {
+            return request;
+        }
+
 		public override CommandResult Execute(Command command)
 		{
 			var uri = CreateUri(command);
 			try
 			{
-				var request = CreateRequest(uri, command);
+                var request = RequestBeforeBodySend(CreateRequest(uri, command));
 
 				if (command.BodyProvider != null)
 					command.BodyProvider.Provide(request.GetRequestStream());

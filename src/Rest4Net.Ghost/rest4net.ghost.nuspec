@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Rest4Net.Ghost</id>
+    <version>0.1.0</version>
+    <authors>Oleksii Glib</authors>
+    <owners>Oleksii Glib</owners>
+    <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
+    <projectUrl>https://github.com/acropolium/Rest4Net</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Ghost blogging system API accessor</description>
+    <copyright>Copyright 2014</copyright>
+	<dependencies>
+      <dependency id="Rest4Net" />
+    </dependencies>
+    <tags>rest api ghost blogging blog ghost.io ghost.org</tags>
+  </metadata>
+  <files>
+    <file src="build\binaries\Rest4Net.Ghost.dll" target="lib\net40" />
+    <file src="build\binaries\Rest4Net.Ghost.pdb" target="lib\net40" />
+    <file src="src\Rest4Net.Ghost\**\*.cs" target="src" />
+  </files>
+</package>

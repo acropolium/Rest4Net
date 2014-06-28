@@ -51,6 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols\BaseProtocol.cs" />
     <Compile Include="Protocols\CommonWebProtocol.cs" />
+    <Compile Include="Protocols\HttpBaseProtocol.cs" />
     <Compile Include="Protocols\Https.cs" />
     <Compile Include="Protocols\Http.cs" />
     <Compile Include="RequestType.cs" />

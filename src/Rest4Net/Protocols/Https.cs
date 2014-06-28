@@ -1,19 +1,7 @@
-﻿using System;
-
-namespace Rest4Net.Protocols
+﻿namespace Rest4Net.Protocols
 {
-    public class Https : CommonWebProtocol
+    public class Https : HttpBaseProtocol
     {
-        public Https(string host, int port = -1) : base(host, port) { }
-
-        protected override string Scheeme
-        {
-            get { return Uri.UriSchemeHttps; }
-        }
-
-        protected override int DefaultPort
-        {
-            get { return 443; }
-        }
+        public Https(string host, int port = -1) : base(host, port, true) { }
     }
 }

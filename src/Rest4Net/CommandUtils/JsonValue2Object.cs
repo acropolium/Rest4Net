@@ -55,6 +55,16 @@ namespace Rest4Net.CommandUtils
             {
                 try
                 {
+                    if (resultType == typeof (Guid))
+                    {
+                        var s = (string)System.Convert.ChangeType(vValue.Value, typeof(string));
+                        return new Guid(s);
+                    }
+                }
+                // ReSharper disable once EmptyGeneralCatchClause
+                catch { }
+                try
+                {
                     return System.Convert.ChangeType(vValue.Value, resultType);
                 }
                 // ReSharper disable once EmptyGeneralCatchClause
