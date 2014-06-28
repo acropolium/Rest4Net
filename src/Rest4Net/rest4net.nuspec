@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Rest4Net</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <authors>Oleksii Glib</authors>
     <owners>Oleksii Glib</owners>
     <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
