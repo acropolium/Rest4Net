@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Rest4Net.IronMq.Responses.Implementation;
@@ -119,12 +118,22 @@ namespace Rest4Net.IronMq
 
         public IMessage GetMessage(string queueName)
         {
-            return GetMessages(queueName).FirstOrDefault();
+            var ie = GetMessages(queueName);
+            foreach (var message in ie)
+                return message;
+            return null;
         }
 
         public IEnumerable<IMessage> GetMessages(string queueName, int countToTake = 1)
         {
-            return BuildWithPath("/" + queueName + "/messages").WithParameter("n", countToTake.ToString()).Execute().To<MessagesImpl>(JsonPreparer).messages;
+            foreach (
+                var message in
+                    BuildWithPath("/" + queueName + "/messages")
+                        .WithParameter("n", countToTake)
+                        .Execute()
+                        .To<MessagesImpl>(JsonPreparer)
+                        .messages)
+                yield return message;
         }
 
         public bool RemoveMessage(string queueName, string id)

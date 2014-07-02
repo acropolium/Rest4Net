@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using Rest4Net.BitLy.Responses;
 using Rest4Net.BitLy.Responses.Implementation;
 using Rest4Net.Protocols;
@@ -47,6 +47,13 @@ namespace Rest4Net.BitLy
             return query.WithParameter("longUrl", longUrl).Execute().To<BitlyResponseImpl<IShorten, ShortenImpl>>();
         }
 
+        private static Command Aggregate(Command query, string paramName, IEnumerable<string> values)
+        {
+            foreach (var value in values)
+                query = query.WithParameter(paramName, value);
+            return query;
+        }
+
         /// <summary>
         /// Given a bit.ly URL or hash (or multiple), /v3/expand decodes it and returns back the target URL.
         /// http://code.google.com/p/bitly-api/wiki/ApiDocumentation#/v3/expand
@@ -58,7 +65,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/expand").WithParameter("shortUrl", shortUrl);
             if (shortUrls != null)
-                query = shortUrls.Aggregate(query, (current, url) => current.WithParameter("shortUrl", url));
+                query = Aggregate(query, "shortUrl", shortUrls);
             return query.Execute().To<BitlyResponseImpl<IExpanded, ExpandedImpl>>();
         }
 
@@ -73,7 +80,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/expand").WithParameter("hash", hash);
             if (hashes != null)
-                query = hashes.Aggregate(query, (current, h) => current.WithParameter("hash", h));
+                query = Aggregate(query, "hash", hashes);
             return query.Execute().To<BitlyResponseImpl<IExpanded, ExpandedImpl>>();
         }
 
@@ -101,7 +108,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/clicks").WithParameter("shortUrl", shortUrl);
             if (shortUrls != null)
-                query = shortUrls.Aggregate(query, (current, url) => current.WithParameter("shortUrl", url));
+                query = Aggregate(query, "shortUrl", shortUrls);
             return query.Execute().To<BitlyResponseImpl<IClicks, ClicksImpl>>();
         }
 
@@ -116,7 +123,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/clicks").WithParameter("hash", hash);
             if (hashes != null)
-                query = hashes.Aggregate(query, (current, h) => current.WithParameter("hash", h));
+                query = Aggregate(query, "hash", hashes);
             return query.Execute().To<BitlyResponseImpl<IClicks, ClicksImpl>>();
         }
 
@@ -145,7 +152,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/lookup").WithParameter("url", url);
             if (urls != null)
-                query = urls.Aggregate(query, (current, u) => current.WithParameter("url", u));
+                query = Aggregate(query, "url", urls);
             return query.Execute().To<BitlyResponseImpl<ILookup, LookupImpl>>();
         }
 
@@ -176,7 +183,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/info").WithParameter("shortUrl", shortUrl);
             if (shortUrls != null)
-                query = shortUrls.Aggregate(query, (current, url) => current.WithParameter("shortUrl", url));
+                query = Aggregate(query, "shortUrl", shortUrls);
             return query.Execute().To<BitlyResponseImpl<IInfo, InfoImpl>>();
         }
 
@@ -191,7 +198,7 @@ namespace Rest4Net.BitLy
         {
             var query = C("/v3/info").WithParameter("hash", hash);
             if (hashes != null)
-                query = hashes.Aggregate(query, (current, h) => current.WithParameter("hash", h));
+                query = Aggregate(query, "hash", hashes);
             return query.Execute().To<BitlyResponseImpl<IInfo, InfoImpl>>();
         }
     }

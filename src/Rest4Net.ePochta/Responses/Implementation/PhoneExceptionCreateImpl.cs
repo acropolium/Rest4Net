@@ -2,6 +2,7 @@
 {
     internal class PhoneExceptionCreateImpl
     {
+        // ReSharper disable once InconsistentNaming
         public int exseption_id;
 
         public int Id

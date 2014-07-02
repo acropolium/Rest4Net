@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 
 namespace Rest4Net.CommandUtils
 {
-    internal static class JsonValue2Object
+    internal class JsonValue2Object
     {
-        public static T ConvertTo<T>(this JToken value)
+        public static T ConvertTo<T>(JToken value)
         {
             return (T)Convert(typeof (T), value);
         }
@@ -42,8 +41,10 @@ namespace Rest4Net.CommandUtils
                 foreach (var field in resultType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
                 {
                     var fn = field.Name;
-                    foreach (var v in vObject.Properties().Where(v => KeysAreEqual(fn, v.Name)))
+                    foreach (var v in vObject.Properties())
                     {
+                        if (!KeysAreEqual(fn, v.Name))
+                            continue;
                         field.SetValue(o, Convert(field.FieldType, v.Value));
                         break;
                     }
@@ -57,8 +58,8 @@ namespace Rest4Net.CommandUtils
                 {
                     if (resultType == typeof (Guid))
                     {
-                        var s = (string)System.Convert.ChangeType(vValue.Value, typeof(string));
-                        return new Guid(s);
+                        var s = System.Convert.ChangeType(vValue.Value, typeof(string)) as string;
+                        return s==null ? Guid.Empty : new Guid(s);
                     }
                 }
                 // ReSharper disable once EmptyGeneralCatchClause

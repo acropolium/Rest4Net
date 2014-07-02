@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 
 namespace Rest4Net.Ghost
 {
@@ -18,7 +15,7 @@ namespace Rest4Net.Ghost
             var request = base.GetWebRequest(address) as HttpWebRequest;
             if (request == null)
                 return null;
-            if (!String.IsNullOrWhiteSpace(Tag))
+            if (!String.IsNullOrEmpty(Tag))
             {
                 if (request.Headers == null)
                     request.Headers = new WebHeaderCollection();
@@ -113,11 +110,16 @@ namespace Rest4Net.Ghost
             GetCsrfParamMetaValue(MakeReqest(url));
         }
 
+        private static string UrlEncode(string data)
+        {
+            return Uri.EscapeDataString(data);
+        }
+
         public void Login(string url, string normalUrl, string login, string password)
         {
             UpdateToken(url);
             MakeReqest(url,
-                String.Format("email={0}&password={1}", HttpUtility.UrlEncode(login), HttpUtility.UrlEncode(password)),
+                String.Format("email={0}&password={1}", UrlEncode(login), UrlEncode(password)),
                 false);
             UpdateToken(normalUrl);
         }
@@ -126,7 +128,15 @@ namespace Rest4Net.Ghost
 
         public Cookie ConnSid
         {
-            get { return _cookies.Values.FirstOrDefault(x => x.Name == "connect.sid"); }
+            get
+            {
+                foreach (var x in _cookies.Values)
+                {
+                    if (x.Name == "connect.sid")
+                        return x;
+                }
+                return null;
+            }
         }
     }
 }

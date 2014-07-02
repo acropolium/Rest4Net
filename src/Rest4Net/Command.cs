@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Rest4Net.CommandUtils.BodyProviders;
 
 namespace Rest4Net
@@ -24,14 +23,14 @@ namespace Rest4Net
 
         internal static Command Create(string path, RequestType type, RestApiProvider executor)
         {
-            if (String.IsNullOrWhiteSpace(path))
+            if (String.IsNullOrEmpty(path))
                 throw new ArgumentNullException("path");
             return new Command(type, path, executor);
         }
 
         private Command WithSomething(ICollection<KeyValuePair<string, string>> list, string key, string value)
         {
-            if (String.IsNullOrWhiteSpace(key))
+            if (String.IsNullOrEmpty(key))
                 throw new ArgumentNullException("key");
             list.Add(new KeyValuePair<string, string>(key, value));
             return this;
@@ -57,9 +56,9 @@ namespace Rest4Net
             return condition ? WithParameter(key, value) : this;
         }
 
-        public Command WithParameterIfNotNullOrWhiteSpace(string key, string value)
+        public Command WithParameterIfNotNull(string key, string value)
         {
-            return WithContitionParameter(!String.IsNullOrWhiteSpace(value), key, value);
+            return WithContitionParameter(!String.IsNullOrEmpty(value), key, value);
         }
 
         public Command WithParameter(string key, int value)
@@ -77,14 +76,17 @@ namespace Rest4Net
             return WithParameter(key, value.ToString(CultureInfo.InvariantCulture));
         }
 
+        private static IEnumerable<KeyValuePair<string, string>> GetParametersFromObject(object parameters)
+        {
+            foreach (var f in parameters.GetType().GetFields())
+                yield return new KeyValuePair<string, string>(f.Name, f.GetValue(parameters).ToString());
+            foreach (var f in parameters.GetType().GetProperties())
+                yield return new KeyValuePair<string, string>(f.Name, f.GetValue(parameters, null).ToString());
+        }
+
         public Command WithParameter(object parameters)
         {
-            return WithParameter(
-                parameters.GetType().GetFields().Select(
-                    pi => new KeyValuePair<string, string>(pi.Name, pi.GetValue(parameters).ToString())))
-                .WithParameter(
-                    parameters.GetType().GetProperties().Select(
-                        pi => new KeyValuePair<string, string>(pi.Name, pi.GetValue(parameters, null).ToString())));
+            return WithParameter(GetParametersFromObject(parameters));
         }
 
         public Command WithParameter(IEnumerable<KeyValuePair<string, string>> parameters)

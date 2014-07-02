@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 using Rest4Net.ePochta.Responses;
 
 namespace Rest4Net.ePochta.Utils
 {
-    internal static class AtomParkUtils
+    internal class AtomParkUtils
     {
-        public static JToken ConvertArrayedResult(this JToken input, Func<JToken, JToken> errorChecker)
+        public static JToken ConvertArrayedResult(JToken input, CommandResult.JsonPreparer<JToken, JToken> errorChecker)
         {
             var oInitial = errorChecker(input);
             var objInitial = oInitial as JObject;
             if (objInitial == null || objInitial["result"] == null)
                 return oInitial;
             var o = (JObject) objInitial.GetValue("result");
-            var keys = o.Properties().Select(x => x.Name).ToArray();
+            var keys = new List<string>();
+            foreach (var p in o.Properties())
+                keys.Add(p.Name);
 
             var result = new JArray();
-            var cnt = ((JArray)o[keys.First()]).Count;
+            var cnt = ((JArray)o[keys[0]]).Count;
             for (var i = 0; i < cnt; i++)
             {
                 var obj = new JObject();
@@ -38,7 +39,7 @@ namespace Rest4Net.ePochta.Utils
             foreach (var item in items)
             {
                 var itm = new JArray { new JValue(item.PhoneNumber) };
-                if (!String.IsNullOrWhiteSpace(item.Variables))
+                if (!String.IsNullOrEmpty(item.Variables))
                     itm.Add(new JValue(item.Variables));
                 array.Add(itm);
             }

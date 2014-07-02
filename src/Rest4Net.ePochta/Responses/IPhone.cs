@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Rest4Net.ePochta.Responses
 {
@@ -9,7 +8,7 @@ namespace Rest4Net.ePochta.Responses
         int AddressbookId { get; }
         string Phone { get; }
         string NormalPhone { get; }
-        HashSet<string> Variables { get; }
+        IDictionary<string, bool> Variables { get; }
         int Status { get; }
         string Code { get; }
     }

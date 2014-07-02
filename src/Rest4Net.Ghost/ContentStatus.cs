@@ -9,9 +9,9 @@ namespace Rest4Net.Ghost
         Draft = 2
     }
 
-    internal static class ContentStatusHelper
+    internal class ContentStatusHelper
     {
-        public static ContentStatus ToPageStatus(this string value)
+        public static ContentStatus ToPageStatus(string value)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace Rest4Net.Ghost
             }
         }
 
-        public static string ToGhostString(this ContentStatus status)
+        public static string ToGhostString(ContentStatus status)
         {
             return status.ToString().ToLower();
         }

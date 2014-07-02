@@ -1,18 +1,26 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Rest4Net.Ghost.Exceptions;
 
 namespace Rest4Net.Ghost
 {
-    internal static class JsonHelper
+    internal class JsonHelper
     {
-        public static JToken CheckResponseForError(this JToken token)
+        private static int CountEnum(IEnumerable<JProperty> properties)
+        {
+            var r = 0;
+            foreach (var p in properties)
+                r++;
+            return r;
+        }
+
+        public static JToken CheckResponseForError(JToken token)
         {
             try
             {
                 var o = token as JObject;
-                if (o != null && o.Properties().Count() == 1 && o["status"].Value<int>() == 403)
+                if (o != null && CountEnum(o.Properties()) == 1 && o["status"].Value<int>() == 403)
                     throw new GhostPleaseSignInException();
             }
             catch (Exception e)

@@ -12,7 +12,7 @@ namespace Rest4Net.ePochta.Responses
         Spam
     }
 
-    internal static class SmsDeliveryStatusUtils
+    internal class SmsDeliveryStatusUtils
     {
         private static readonly Dictionary<SmsDeliveryStatus, string> Items = new Dictionary<SmsDeliveryStatus, string>
         {
@@ -32,12 +32,12 @@ namespace Rest4Net.ePochta.Responses
                 ItemsReverse[item.Value] = item.Key;
         }
 
-        public static string AsString(this SmsDeliveryStatus item)
+        public static string AsString(SmsDeliveryStatus item)
         {
             return Items[item];
         }
 
-        public static SmsDeliveryStatus AsSmsDeliveryStatus(this string item)
+        public static SmsDeliveryStatus AsSmsDeliveryStatus(string item)
         {
             return ItemsReverse[item];
         }

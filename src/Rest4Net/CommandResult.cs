@@ -48,15 +48,17 @@ namespace Rest4Net
                 return r.Read(_dataStream);
         }
 
-        public T To<T>(Func<JToken, JToken> prepareJson = null)
+        public delegate TResult JsonPreparer<in TInput, out TResult>(TInput jtoken);
+
+        public T To<T>(JsonPreparer<JToken, JToken> prepareJson = null)
         {
             var json = ToJson();
             if (prepareJson != null)
                 json = prepareJson(json);
-            return json.ConvertTo<T>();
+            return JsonValue2Object.ConvertTo<T>(json);
         }
         
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (_jsonTextReader != null)
                 _jsonTextReader.Close();

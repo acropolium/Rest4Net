@@ -4,15 +4,21 @@ namespace Rest4Net.Ghost.Responses.Implementation
 {
     internal class Posts : IPosts
     {
+#pragma warning disable 649
         private List<Post> _posts;
         private int _page;
         private int _limit;
         private int _pages;
         private int _total;
+#pragma warning restore 649
 
         public IEnumerable<IPost> Items
         {
-            get { return _posts; }
+            get
+            {
+                foreach (var post in _posts)
+                    yield return post;
+            }
         }
 
         public int Page

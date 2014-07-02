@@ -39,7 +39,7 @@ namespace Rest4Net.Ghost
             return Cmd("/posts/")
                 .WithParameter("page", page)
                 .WithParameter("limit", limit)
-                .WithParameter("status", status.ToGhostString())
+                .WithParameter("status", ContentStatusHelper.ToGhostString(status))
                 .WithParameter("staticPages", withStaticPages.ToString().ToLower())
                 .Execute().To<Posts>(JsonHelper.CheckResponseForError);
         }
@@ -47,7 +47,7 @@ namespace Rest4Net.Ghost
         public IPost GetPost(int id)
         {
             return Cmd("/posts/" + id + "/")
-                .WithParameter("status", ContentStatus.All.ToGhostString())
+                .WithParameter("status", ContentStatusHelper.ToGhostString(ContentStatus.All))
                 .Execute().To<Post>(JsonHelper.CheckResponseForError);
         }
 
@@ -80,7 +80,8 @@ namespace Rest4Net.Ghost
 
         public IEnumerable<ITag> GetTags()
         {
-            return Cmd("/tags/").Execute().To<List<Tag>>(JsonHelper.CheckResponseForError);
+            foreach (var tag in Cmd("/tags/").Execute().To<List<Tag>>(JsonHelper.CheckResponseForError))
+                yield return tag;
         }
 
         public string DbExport()

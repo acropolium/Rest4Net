@@ -4,10 +4,12 @@ namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class SenderImpl : ISender
     {
+#pragma warning disable 649
         private int id;
         private string name;
         private int status;
         private string country;
+#pragma warning restore 649
 
         public int Id
         {
@@ -26,7 +28,7 @@ namespace Rest4Net.ePochta.Responses.Implementation
 
         public Country Country
         {
-            get { return country.AsCountry(); }
+            get { return CountriesUtils.AsCountry(country); }
         }
 
         public override string ToString()

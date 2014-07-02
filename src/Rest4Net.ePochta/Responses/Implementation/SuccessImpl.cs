@@ -2,6 +2,7 @@
 {
     internal class SuccessImpl
     {
+        // ReSharper disable once InconsistentNaming
         public bool successful;
     }
 }

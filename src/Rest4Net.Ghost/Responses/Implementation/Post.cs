@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Rest4Net.Ghost.Responses.Implementation
 {
     internal class Post : IPost
     {
+#pragma warning disable 649
         [Ignore]
         private int _id;
         [Ignore]
@@ -45,6 +45,7 @@ namespace Rest4Net.Ghost.Responses.Implementation
         [Ignore]
         private User _user;
         private List<Tag> _tags = new List<Tag>();
+#pragma warning restore 649
 
         public override string ToString()
         {
@@ -107,8 +108,8 @@ namespace Rest4Net.Ghost.Responses.Implementation
 
         public ContentStatus Status
         {
-            get { return _status.ToPageStatus(); }
-            set { _status = value.ToGhostString(); }
+            get { return ContentStatusHelper.ToPageStatus(_status); }
+            set { _status = ContentStatusHelper.ToGhostString(value); }
         }
 
         public string Language
@@ -208,7 +209,12 @@ namespace Rest4Net.Ghost.Responses.Implementation
 
         public ITag GetTag(string tagName)
         {
-            return _tags.FirstOrDefault(x => x.Name == tagName);
+            foreach (var tag in _tags)
+            {
+                if (tag.Name == tagName)
+                    return tag;
+            }
+            return null;
         }
 
         public bool HasTag(string tagName)
@@ -218,7 +224,11 @@ namespace Rest4Net.Ghost.Responses.Implementation
 
         public IEnumerable<ITag> Tags
         {
-            get { return _tags; }
+            get
+            {
+                foreach (var tag in _tags)
+                    yield return tag;
+            }
         }
 
         public JObject ToJson()

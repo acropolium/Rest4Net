@@ -4,29 +4,31 @@ namespace Rest4Net.BitLy.Responses.Implementation
 {
     internal class InfoImpl : IInfo
     {
+#pragma warning disable 649
         private readonly List<InfoItemImpl> _info;
+#pragma warning restore 649
 
         public IEnumerable<IInfoItem> Info
         {
-            get { return _info; }
+            get
+            {
+                foreach (var impl in _info)
+                    yield return impl;
+            }
         }
     }
 
     internal class InfoItemImpl : IInfoItem
     {
+#pragma warning disable 649
         private string _globalHash;
-
         private string _shortUrl;
-
         private string _hash;
-
         private string _userHash;
-
         private string _error;
-
         private string _title;
-
         private string _createdBy;
+#pragma warning restore 649
 
         public string GlobalHash
         {

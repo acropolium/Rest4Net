@@ -76,7 +76,7 @@ namespace Rest4Net.Ghost
             if (request.Headers == null)
                 request.Headers = new WebHeaderCollection();
             request.Headers.Add(@"X-Requested-With", @"XMLHttpRequest");
-            if (!String.IsNullOrWhiteSpace(_token))
+            if (!String.IsNullOrEmpty(_token))
                 request.Headers.Add(@"X-CSRF-Token", _token);
             if (_cookie != null)
             {

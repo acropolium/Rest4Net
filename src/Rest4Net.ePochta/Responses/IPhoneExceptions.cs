@@ -5,6 +5,6 @@ namespace Rest4Net.ePochta.Responses
     public interface IPhoneExceptions
     {
         int Count { get; }
-        IList<IPhoneException> Items { get; }
+        IEnumerable<IPhoneException> Items { get; }
     }
 }

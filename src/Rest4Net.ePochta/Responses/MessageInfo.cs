@@ -59,12 +59,12 @@ namespace Rest4Net.ePochta.Responses
                 cmd.WithParameter("sender", Sender)
                     .WithParameter("text", Text)
                     .WithParameter("sms_lifetime", (int) Lifetime)
-                    .WithParameter("datetime", SendAt.ToPochtaString(""));
+                    .WithParameter("datetime", DateUtils.ToPochtaString(SendAt, ""));
             if (Type != MessageType.Default)
                 c = c.WithParameter("type", (int)Type);
-            if (!String.IsNullOrWhiteSpace(AlternativeSender))
+            if (!String.IsNullOrEmpty(AlternativeSender))
                 c = c.WithParameter("asender", AlternativeSender);
-            if (!String.IsNullOrWhiteSpace(UserApp))
+            if (!String.IsNullOrEmpty(UserApp))
                 c = c.WithParameter("userapp", UserApp);
             return c;
         }

@@ -5,10 +5,12 @@ namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class SmsDeliveryInfoImpl : ISmsDeliveryInfo
     {
+#pragma warning disable 649
         private string phone;
         private string sentdate;
         private string donedate;
         private string status;
+#pragma warning restore 649
 
         public string Phone
         {
@@ -17,17 +19,17 @@ namespace Rest4Net.ePochta.Responses.Implementation
 
         public DateTime? SentAt
         {
-            get { return sentdate.ToPochtaDateNullable(); }
+            get { return DateUtils.ToPochtaDateNullable(sentdate); }
         }
 
         public DateTime? FinalStatusAt
         {
-            get { return donedate.ToPochtaDateNullable(); }
+            get { return DateUtils.ToPochtaDateNullable(donedate); }
         }
 
         public SmsDeliveryStatus Status
         {
-            get { return status.AsSmsDeliveryStatus(); }
+            get { return SmsDeliveryStatusUtils.AsSmsDeliveryStatus(status); }
         }
 
         public override string ToString()

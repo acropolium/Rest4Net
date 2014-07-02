@@ -2,6 +2,7 @@
 {
     internal class PhoneCreateImpl
     {
+        // ReSharper disable once InconsistentNaming
         public int phone_id;
 
         public int Id

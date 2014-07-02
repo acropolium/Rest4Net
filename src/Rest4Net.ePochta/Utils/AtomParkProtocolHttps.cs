@@ -11,7 +11,7 @@ namespace Rest4Net.ePochta.Utils
 
         public override CommandResult Execute(Command command)
         {
-            return command.PrepareRequestAndExecute(PrivateKey, base.Execute);
+            return CommandUtils.PrepareRequestAndExecute(command, PrivateKey, base.Execute);
         }
 
         internal string PrivateKey { private get; set; }

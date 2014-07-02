@@ -1,21 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class AddressBooksImpl : IAddressBooks
     {
+#pragma warning disable 649
         private int count;
         private readonly List<AddressBookImpl> items = new List<AddressBookImpl>();
+#pragma warning restore 649
 
         public int Count
         {
             get { return count; }
         }
 
-        public IList<IAddressBook> Items
+        public IEnumerable<IAddressBook> Items
         {
-            get { return items.Select(x => (IAddressBook)x).ToList(); }
+            get
+            {
+                foreach (var item in items)
+                    yield return item;
+            }
         }
     }
 }

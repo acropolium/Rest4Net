@@ -22,7 +22,7 @@ namespace Rest4Net.ePochta.Responses.Implementation
 
         public DateTime DateOfCreation
         {
-            get { return added.ToPochtaDate(); }
+            get { return DateUtils.ToPochtaDate(added); }
         }
 
         public string Comment

@@ -16,7 +16,7 @@ namespace Rest4Net.Protocols
 
         public BaseProtocol WithHost(string host)
         {
-            if (String.IsNullOrWhiteSpace(host))
+            if (String.IsNullOrEmpty(host))
                 throw new ArgumentNullException("host");
             Host = host;
             return this;

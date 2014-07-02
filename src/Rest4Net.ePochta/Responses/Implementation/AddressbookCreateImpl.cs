@@ -2,6 +2,7 @@
 {
     internal class AddressbookCreateImpl
     {
+        // ReSharper disable once InconsistentNaming
         public int addressbook_id;
 
         public int Id
@@ -12,6 +13,7 @@
 
     internal class AddressbookCloneImpl
     {
+        // ReSharper disable once InconsistentNaming
         public int idAddressBook;
 
         public int Id

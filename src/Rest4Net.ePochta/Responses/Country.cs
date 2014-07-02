@@ -8,7 +8,7 @@ namespace Rest4Net.ePochta.Responses
         Ukraine
     }
 
-    internal static class CountriesUtils
+    internal class CountriesUtils
     {
         private static readonly Dictionary<Country, string> Items = new Dictionary<Country, string>
         {
@@ -24,12 +24,12 @@ namespace Rest4Net.ePochta.Responses
                 ItemsReverse[item.Value] = item.Key;
         }
 
-        public static string AsString(this Country country)
+        public static string AsString(Country country)
         {
             return Items[country];
         }
 
-        public static Country AsCountry(this string country)
+        public static Country AsCountry(string country)
         {
             return ItemsReverse[country];
         }

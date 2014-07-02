@@ -3,9 +3,9 @@ using System.Text;
 
 namespace Rest4Net.ePochta.Utils
 {
-    internal static class StringUtils
+    internal class StringUtils
     {
-        public static string Md5(this string input)
+        public static string Md5(string input)
         {
             var inputBytes = Encoding.ASCII.GetBytes(input);
             var hash = MD5.Create().ComputeHash(inputBytes);

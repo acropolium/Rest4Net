@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Globalization;
 using Rest4Net.ePochta.Utils;
 
 namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class AddressBookImpl : IAddressBook
     {
+#pragma warning disable 649
         private int id;
         private string name;
         private string description;
@@ -13,6 +13,7 @@ namespace Rest4Net.ePochta.Responses.Implementation
         private int exceptions;
         private string creationdate;
         private string date;
+#pragma warning restore 649
 
         public int Id
         {
@@ -41,7 +42,7 @@ namespace Rest4Net.ePochta.Responses.Implementation
 
         public DateTime Created
         {
-            get { return (creationdate ?? date).ToPochtaDate(); }
+            get { return DateUtils.ToPochtaDate(creationdate ?? date); }
         }
     }
 }
