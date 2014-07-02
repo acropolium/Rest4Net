@@ -2,9 +2,10 @@
 {
     internal class ValidDomainImpl : IValidDomain
     {
+#pragma warning disable 649
         private string _domain;
-
         private bool _bitlyProDomain;
+#pragma warning restore 649
 
         public string Domain
         {

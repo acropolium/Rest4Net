@@ -5,6 +5,7 @@ namespace Rest4Net.Ghost.Responses.Implementation
 {
     internal class Tag : ITag
     {
+#pragma warning disable 649
         [IgnoreIfNull]
         private int _id;
         [Ignore]
@@ -28,6 +29,7 @@ namespace Rest4Net.Ghost.Responses.Implementation
         private string _description;
         [Ignore]
         private int? _parent_id;
+#pragma warning restore 649
 
         public override string ToString()
         {

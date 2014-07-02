@@ -5,10 +5,12 @@ namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class PhoneExceptionImpl : IPhoneException
     {
+#pragma warning disable 649
         private int id;
         private string phone;
         private string added;
         private string comment;
+#pragma warning restore 649
 
         public int Id
         {

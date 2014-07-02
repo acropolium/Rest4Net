@@ -2,10 +2,12 @@
 {
     internal class QueueImpl : IQueue
     {
+#pragma warning disable 649
         private string id;
         private string project_id;
         private string name;
         private int size;
+#pragma warning restore 649
 
         public string ID
         {

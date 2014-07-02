@@ -2,7 +2,9 @@
 {
     internal class AuthenticateImpl : IAuthenticate
     {
+#pragma warning disable 649
         private AuthenticateItemImpl _authenticate;
+#pragma warning restore 649
 
         public IAuthenticateItem Authenticate
         {
@@ -12,11 +14,11 @@
 
     internal class AuthenticateItemImpl : IAuthenticateItem
     {
+#pragma warning disable 649
         private bool _successful;
-
         private string _username;
-
         private string _apiKey;
+#pragma warning restore 649
 
         public bool Successful
         {

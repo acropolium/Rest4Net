@@ -10,8 +10,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rest4Net.IronMq</RootNamespace>
     <AssemblyName>Rest4Net.IronMq</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin\Release\net20\</OutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <DocumentationFile>bin\Release\net20\Rest4Net.IronMq.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release 3.5|AnyCPU' ">
     <DefineConstants>NET35</DefineConstants>
@@ -41,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin\Release\net35\</OutputPath>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<DocumentationFile>bin\Release\net35\Rest4Net.IronMq.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release 4.0|AnyCPU' ">
     <DefineConstants>NET40</DefineConstants>
@@ -51,6 +53,7 @@
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin\Release\net40\</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+	<DocumentationFile>bin\Release\net40\Rest4Net.IronMq.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release 4.5|AnyCPU' ">
     <DefineConstants>NET45</DefineConstants>
@@ -61,6 +64,7 @@
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin\Release\net45\</OutputPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+	<DocumentationFile>bin\Release\net45\Rest4Net.IronMq.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IMessage.cs" />

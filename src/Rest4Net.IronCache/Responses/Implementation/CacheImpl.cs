@@ -2,8 +2,10 @@
 {
     internal class CacheImpl : ICache
     {
+#pragma warning disable 649
         private string project_id;
         private string name;
+#pragma warning restore 649
 
         public string ProjectID
         {

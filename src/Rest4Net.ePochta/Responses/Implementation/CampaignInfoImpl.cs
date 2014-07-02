@@ -4,12 +4,14 @@ namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class CampaignInfoImpl : ICampaignInfo
     {
+#pragma warning disable 649
         private int sent;
         private int delivered;
         private int not_delivered;
         private int status;
         private double price;
         private string currency;
+#pragma warning restore 649
 
         public int SentCount
         {

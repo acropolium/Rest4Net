@@ -2,22 +2,10 @@
 <package >
   <metadata>
     <id>Rest4Net.IronMq</id>
-    <version>0.3.0</version>
-    <authors>Oleksii Glib</authors>
-    <owners>Oleksii Glib</owners>
-    <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
-    <projectUrl>https://github.com/acropolium/Rest4Net</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>IromMQ service accessor</description>
-    <copyright>Copyright 2012</copyright>
 	<dependencies>
       <dependency id="Rest4Net" />
     </dependencies>
     <tags>rest api ironmq</tags>
   </metadata>
-  <files>
-    <file src="build\binaries\Rest4Net.IronMq.dll" target="lib\net40" />
-    <file src="build\binaries\Rest4Net.IronMq.pdb" target="lib\net40" />
-    <file src="src\Rest4Net.IronMq\**\*.cs" target="src" />
-  </files>
 </package>

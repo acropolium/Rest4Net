@@ -2,21 +2,16 @@
 {
     internal class BitlyItemImpl : IBitlyItem
     {
+#pragma warning disable 649
         private string _longUrl;
-
         private string _shortUrl;
-
         private string _globalHash;
-
         private int _userClicks;
-
         private string _userHash;
-
         private int _globalClicks;
-
         private string _hash;
-
         private string _error;
+#pragma warning restore 649
 
         public string LongUrl
         {

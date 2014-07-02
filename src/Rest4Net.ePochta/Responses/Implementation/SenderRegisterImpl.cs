@@ -2,7 +2,9 @@
 {
     internal class SenderRegisterImpl
     {
+#pragma warning disable 649
         public int name_id;
+#pragma warning restore 649
 
         public int Id
         {

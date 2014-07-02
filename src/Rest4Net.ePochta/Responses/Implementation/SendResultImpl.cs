@@ -4,7 +4,9 @@ namespace Rest4Net.ePochta.Responses.Implementation
 {
     internal class SendResultImpl : SendPriceImpl, ISendResult
     {
+#pragma warning disable 649
         private int id;
+#pragma warning restore 649
 
         public int Id
         {

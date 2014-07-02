@@ -4,35 +4,32 @@ namespace Rest4Net.GoogleCustomSearch
 {
     public class SearchResult
     {
+#pragma warning disable 649
         private string _kind;
+        private SearchResultUrl _url;
+        private SearchResultQueries _queries;
+        private SearchResultContext _context;
+        private List<SearchResultItem> _items;
+#pragma warning restore 649
 
         public string Kind
         {
             get { return _kind; }
         }
         
-        private SearchResultUrl _url;
-
         public SearchResultUrl Url
         {
             get { return _url; }
         }
-
-        private SearchResultQueries _queries;
-
         public SearchResultQueries Queries
         {
             get { return _queries; }
         }
 
-        private SearchResultContext _context;
-
         public SearchResultContext Context
         {
             get { return _context; }
         }
-
-        private List<SearchResultItem> _items;
 
         public IEnumerable<SearchResultItem> Items
         {
@@ -42,9 +39,11 @@ namespace Rest4Net.GoogleCustomSearch
 
     public class SearchResultQueries
     {
+#pragma warning disable 649
         private List<SearchResultQuery> _nextPage;
         private List<SearchResultQuery> _previousPage;
         private List<SearchResultQuery> _request;
+#pragma warning restore 649
 
         public IEnumerable<SearchResultQuery> NextPage
         {
@@ -64,7 +63,9 @@ namespace Rest4Net.GoogleCustomSearch
 
     public class SearchResultContext
     {
+#pragma warning disable 649
         private string _title;
+#pragma warning restore 649
 
         public string Title
         {
@@ -74,14 +75,15 @@ namespace Rest4Net.GoogleCustomSearch
 
     public class SearchResultUrl
     {
+#pragma warning disable 649
         private string _type;
+        private string _template;
+#pragma warning restore 649
 
         public string Type
         {
             get { return _type; }
         }
-
-        private string _template;
 
         public string Template
         {
@@ -91,6 +93,7 @@ namespace Rest4Net.GoogleCustomSearch
 
     public class SearchResultQuery
     {
+#pragma warning disable 649
         private string _title;
         private string _searchTerms;
         private string _inputEncoding;
@@ -99,6 +102,7 @@ namespace Rest4Net.GoogleCustomSearch
         private int _totalResults;
         private int _count;
         private int _startIndex;
+#pragma warning restore 649
 
         public string Title
         {
@@ -143,6 +147,7 @@ namespace Rest4Net.GoogleCustomSearch
 
     public class SearchResultItem
     {
+#pragma warning disable 649
         private string _title;
         private string _htmlTitle;
         private string _kind;
@@ -150,6 +155,7 @@ namespace Rest4Net.GoogleCustomSearch
         private string _displayLink;
         private string _snippet;
         private string _htmlSnippet;
+#pragma warning restore 649
 
         public string Title
         {

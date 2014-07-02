@@ -4,6 +4,7 @@ namespace Rest4Net.Ghost.Responses.Implementation
 {
     internal class User : IUser
     {
+#pragma warning disable 649
         private int _id;
         private Guid _uuid;
         private string _slug;
@@ -21,6 +22,7 @@ namespace Rest4Net.Ghost.Responses.Implementation
         private string _website;
         private string _location;
         private string _accessibility;
+#pragma warning restore 649
 
         public override string ToString()
         {
