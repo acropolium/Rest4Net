@@ -9,7 +9,8 @@ namespace Rest4Net.CommandUtils.ResponseReaders
         {
             using (var br = new ByteArrayReader())
             {
-                return Encoding.UTF8.GetString(br.Read(responseStream));
+                var buffer = br.Read(responseStream);
+                return Encoding.UTF8.GetString(buffer, 0, buffer.Length);
             }
         }
 

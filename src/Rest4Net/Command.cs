@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using Rest4Net.CommandUtils.BodyProviders;
 
 namespace Rest4Net
@@ -76,11 +77,33 @@ namespace Rest4Net
             return WithParameter(key, value.ToString(CultureInfo.InvariantCulture));
         }
 
+#if PORTABLE
+        private static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            return type.GetTypeInfo().DeclaredFields;
+        }
+
+        private static IEnumerable<PropertyInfo> GetProperties(Type type)
+        {
+            return type.GetTypeInfo().DeclaredProperties;
+        }
+#else
+        private static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            return type.GetFields();
+        }
+
+        private static IEnumerable<PropertyInfo> GetProperties(Type type)
+        {
+            return type.GetProperties();
+        }
+#endif
+
         private static IEnumerable<KeyValuePair<string, string>> GetParametersFromObject(object parameters)
         {
-            foreach (var f in parameters.GetType().GetFields())
+            foreach (var f in GetFields(parameters.GetType()))
                 yield return new KeyValuePair<string, string>(f.Name, f.GetValue(parameters).ToString());
-            foreach (var f in parameters.GetType().GetProperties())
+            foreach (var f in GetProperties(parameters.GetType()))
                 yield return new KeyValuePair<string, string>(f.Name, f.GetValue(parameters, null).ToString());
         }
 

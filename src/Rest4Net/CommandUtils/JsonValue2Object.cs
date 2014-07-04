@@ -30,6 +30,19 @@ namespace Rest4Net.CommandUtils
             return KeysCheck(n1, n2);
         }
 
+#if PORTABLE
+        private static IEnumerable<FieldInfo> GetFields(Type resultType)
+        {
+            //return resultType.GetTypeInfo().DeclaredFields;
+            return resultType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+#else
+        private static IEnumerable<FieldInfo> GetFields(Type resultType)
+        {
+            return resultType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+#endif
+
         private static object Convert(Type resultType, JToken value)
         {
             if (value == null)
@@ -38,7 +51,7 @@ namespace Rest4Net.CommandUtils
             if (vObject != null)
             {
                 var o = Activator.CreateInstance(resultType);
-                foreach (var field in resultType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+                foreach (var field in GetFields(resultType))
                 {
                     var fn = field.Name;
                     foreach (var v in vObject.Properties())
@@ -76,11 +89,17 @@ namespace Rest4Net.CommandUtils
             var vArray = value as JArray;
             if (vArray != null)
             {
-                if (resultType.IsGenericType && typeof(List<>) == resultType.GetGenericTypeDefinition())
+                if (IsGenericList(resultType))
                 {
+#if PORTABLE
+                    var t = resultType.GetTypeInfo();
+                    var type = t.GenericTypeArguments[0];
+                    var mi = t.GetDeclaredMethod("Add");
+#else
                     var type = resultType.GetGenericArguments()[0];
-                    var o = Activator.CreateInstance(resultType);
                     var mi = resultType.GetMethod("Add");
+#endif
+                    var o = Activator.CreateInstance(resultType);
                     foreach (var item in vArray)
                     {
                         mi.Invoke(o,
@@ -94,5 +113,17 @@ namespace Rest4Net.CommandUtils
             }
             return null;
         }
+
+#if PORTABLE
+        private static bool IsGenericList(Type resultType)
+        {
+            return resultType.IsConstructedGenericType && typeof(List<>) == resultType.GetGenericTypeDefinition();
+        }
+#else
+        private static bool IsGenericList(Type resultType)
+        {
+            return resultType.IsGenericType && typeof(List<>) == resultType.GetGenericTypeDefinition();
+        }
+#endif
     }
 }

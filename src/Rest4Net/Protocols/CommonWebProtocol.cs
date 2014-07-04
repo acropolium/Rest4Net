@@ -61,10 +61,13 @@ namespace Rest4Net.Protocols
 			{
                 var request = RequestBeforeBodySend(CreateRequest(uri, command));
 
-				if (command.BodyProvider != null)
-					command.BodyProvider.Provide(request.GetRequestStream());
+			    if (command.BodyProvider != null)
+			    {
+			        //request.BeginGetRequestStream();
+			        command.BodyProvider.Provide(request.GetRequestStream());
+			    }
 
-				return ToResult((HttpWebResponse)request.GetResponse());
+			    return ToResult((HttpWebResponse)request.GetResponse());
 			}
 			catch (WebException exception)
 			{

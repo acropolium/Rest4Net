@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Rest4Net.Protocols
+﻿namespace Rest4Net.Protocols
 {
     public class HttpBaseProtocol : CommonWebProtocol
     {
@@ -11,9 +9,12 @@ namespace Rest4Net.Protocols
             _useHttps = useHttps;
         }
 
+        private const string UriSchemeHttps = "https";
+        private const string UriSchemeHttp = "http";
+
         protected override string Scheeme
         {
-            get { return _useHttps ? Uri.UriSchemeHttps : Uri.UriSchemeHttp; }
+            get { return _useHttps ? UriSchemeHttps : UriSchemeHttp; }
         }
 
         protected override int DefaultPort

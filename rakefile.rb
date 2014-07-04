@@ -35,7 +35,7 @@ def get_net_version(netversion)
 			version = 'v2.0.50727'
 		when :net35
 			version = 'v3.5'
-		when :net4, :net40, :net45
+		when :net4, :net40, :net45, :portable45, :portable40
 			version = 'v4.0.30319'
 		else
 			fail_with_message "The .NET Framework #{netversion} is not supported"
@@ -53,13 +53,37 @@ def get_configuration(netversion)
 			version = '4.0'
 		when :net45
 			version = '4.5'
+		when :portable45
+			return 'Portable 4.5'
+		when :portable40
+			return 'Portable 4.0'
 		else
 			fail_with_message "The .NET Framework #{netversion} is not supported"
 	end
 	return 'Release ' + version
 end
 
+def get_dir(netversion)
+	case netversion
+		when :net20
+			return 'net20'
+		when :net35
+			return 'net35'
+		when :net40
+			return 'net40'
+		when :net45
+			return 'net45'
+		when :portable45
+			return 'portable-net45+wp80+win8+wpa81'
+		when :portable40
+			return 'portable-net40+sl4+wp7+win8'
+		else
+			fail_with_message "The .NET Framework #{netversion} is not supported"
+	end
+end
+
 supportedNetVersions = [ :net20, :net35, :net40, :net45 ]
+#supportedNetVersions = [ :net20, :net35, :net40, :net45, :portable45, :portable40 ]
 buildTasksNetVersions = supportedNetVersions.map { |ver| "build_#{ver}" }
 
 task :compile => [:clean, :version] + buildTasksNetVersions
@@ -96,8 +120,9 @@ task :publish => [:compile] do
     Dir.mkdir("#{OUTPUT}/binaries")
 
 	supportedNetVersions.each do |ver|
-		Dir.mkdir("#{OUTPUT}/binaries/#{ver}")
-		FileUtils.cp_r FileList["src/**/#{ver}/*.dll", "src/**/#{ver}/*.pdb", "src/**/#{ver}/*.xml"].exclude(/obj\//).exclude(/.Tests/), "#{OUTPUT}/binaries/#{ver}"
+		d = get_dir(ver)
+		Dir.mkdir("#{OUTPUT}/binaries/#{d}")
+		FileUtils.cp_r FileList["src/**/#{d}/*.dll", "src/**/#{d}/*.pdb", "src/**/#{d}/*.xml"].exclude(/obj\//).exclude(/.Tests/), "#{OUTPUT}/binaries/#{d}"
 	end
 end
 
@@ -151,14 +176,15 @@ task :nuget_package => [:publish] do
 			end
 			ff = fe.add_element 'file'
 			ff.add_attributes( {"src"=>("src/"+md.elements['id'].text+"/**/*.cs"), "target"=>"src"} )
-			supportedNetVersions.each do |ver|
+			supportedNetVersions.each do |v|
+				d = get_dir(v)
 				ff = fe.add_element 'file'
-				path = "#{OUTPUT}/binaries/#{ver}/"+md.elements['id'].text+".dll"
-				ff.add_attributes( {"src"=>path, "target"=>"lib/#{ver}"} )
-				path = "#{OUTPUT}/binaries/#{ver}/"+md.elements['id'].text+".xml"
+				path = "#{OUTPUT}/binaries/#{d}/"+md.elements['id'].text+".dll"
+				ff.add_attributes( {"src"=>path, "target"=>"lib/#{d}"} )
+				path = "#{OUTPUT}/binaries/#{d}/"+md.elements['id'].text+".xml"
 				if File.file?(path)
 					ff = fe.add_element 'file'
-					ff.add_attributes( {"src"=>path, "target"=>"lib/#{ver}"} )
+					ff.add_attributes( {"src"=>path, "target"=>"lib/#{d}"} )
 				end
 			end
         end
