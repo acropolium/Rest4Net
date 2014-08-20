@@ -2,7 +2,7 @@
 
 namespace Rest4Net.Ghost.Responses.Implementation
 {
-    internal class Posts : IPosts
+    internal class Posts : ContainJson, IPosts
     {
 #pragma warning disable 649
         private List<Post> _posts;

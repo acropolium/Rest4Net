@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Rest4Net.Ghost.Responses
 {
-    public interface IPost : IJsonifable
+    public interface IPost : IJsonifable, IContainJson
     {
         int Id { get; }
         Guid Uuid { get; }

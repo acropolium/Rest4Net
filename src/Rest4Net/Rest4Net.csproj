@@ -117,7 +117,7 @@
       <HintPath Condition="'$(Configuration)|$(Platform)' == 'Portable 4.0|AnyCPU'">..\packages\Newtonsoft.Json.6.0.3\lib\portable-net40+sl4+wp7+win8\Newtonsoft.Json.dll</HintPath>
       <HintPath Condition="'$(Configuration)|$(Platform)' == 'Portable 4.5|AnyCPU'">..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-	<Reference Include="System" />
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandResult.cs" />
@@ -129,6 +129,8 @@
     <Compile Include="Exceptions\ResultException.cs" />
     <Compile Include="ICommandResponseReader.cs" />
     <Compile Include="ICommandBodyProvider.cs" />
+    <Compile Include="ContainJson.cs" />
+    <Compile Include="IContainJson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols\BaseProtocol.cs" />
     <Compile Include="Protocols\CommonWebProtocol.cs" />
@@ -139,6 +141,8 @@
     <Compile Include="RestApiProvider.cs" />
     <Compile Include="Exceptions\Rest4NetException.cs" />
     <Compile Include="Exceptions\ConnectionException.cs" />
+    <Compile Include="Utils\xBrainLab\HmacMd5.cs" />
+    <Compile Include="Utils\xBrainLab\Md5.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

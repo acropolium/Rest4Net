@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace Rest4Net.Protocols
 {
@@ -54,20 +56,105 @@ namespace Rest4Net.Protocols
             return request;
         }
 
+	    private class SyncCallHelper
+	    {
+	        private ManualResetEvent _done1Event = new ManualResetEvent(false);
+	        private ManualResetEvent _done2Event = new ManualResetEvent(false);
+            private readonly HttpWebRequest _request;
+            private readonly StreamWriter _streamWriter;
+
+	        public delegate void StreamWriter(Stream s);
+
+	        public SyncCallHelper(HttpWebRequest request, StreamWriter s)
+	        {
+	            _request = request;
+	            _streamWriter = s;
+	        }
+
+	        public void WriteBody()
+	        {
+                if (_streamWriter == null)
+                    return;
+	            try
+	            {
+                    _request.BeginGetRequestStream(RequestCallback, _request);
+                    _done1Event.WaitOne();
+	            }
+	            catch (Exception e)
+	            {
+                    LastException = e;
+	            }
+	        }
+
+            private void RequestCallback(IAsyncResult asynchronousResult)
+	        {
+                try
+                {
+                    var request = (HttpWebRequest) asynchronousResult.AsyncState;
+                    var postStream = request.EndGetRequestStream(asynchronousResult);
+                    _streamWriter(postStream);
+                    postStream.Dispose();
+                }
+                catch (Exception e)
+                {
+                    LastException = e;
+                }
+                finally
+                {
+                    _done1Event.Set();
+                }
+	        }
+
+	        private HttpWebResponse _response;
+
+            public Exception LastException { get; private set; }
+
+	        public HttpWebResponse ReadResponse()
+	        {
+	            try
+	            {
+                    _request.BeginGetResponse(GetResponseCallback, _request);
+                    _done2Event.WaitOne();
+	            }
+	            catch (Exception e)
+	            {
+                    LastException = e;
+	            }
+                return _response;
+            }
+
+            private void GetResponseCallback(IAsyncResult asynchronousResult)
+	        {
+                try
+                {
+                    var request = (HttpWebRequest) asynchronousResult.AsyncState;
+                    _response = (HttpWebResponse) request.EndGetResponse(asynchronousResult);
+                }
+                catch (Exception e)
+                {
+                    LastException = e;
+                }
+                finally
+                {
+                    _done2Event.Set();
+                }
+	        }
+	    }
+
 		public override CommandResult Execute(Command command)
 		{
 			var uri = CreateUri(command);
 			try
 			{
                 var request = RequestBeforeBodySend(CreateRequest(uri, command));
-
-			    if (command.BodyProvider != null)
-			    {
-			        //request.BeginGetRequestStream();
-			        command.BodyProvider.Provide(request.GetRequestStream());
-			    }
-
-			    return ToResult((HttpWebResponse)request.GetResponse());
+			    var sch = new SyncCallHelper(request, (command.BodyProvider != null) ? command.BodyProvider.Provide : (SyncCallHelper.StreamWriter) null);
+                sch.WriteBody();
+			    if (sch.LastException != null)
+			        throw sch.LastException;
+			    var rsp = sch.ReadResponse();
+                if (sch.LastException != null)
+                    throw sch.LastException;
+			    return ToResult(rsp);
 			}
 			catch (WebException exception)
 			{

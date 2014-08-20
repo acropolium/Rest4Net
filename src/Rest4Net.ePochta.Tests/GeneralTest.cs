@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
-using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
@@ -16,9 +15,10 @@ namespace Rest4Net.ePochta.Tests
         [TestFixtureSetUp]
         public void LoadConfigurationValuesAndConstants()
         {
-            var configPath = Path.GetFullPath("./../../Assets/Config.xml");
-            if(!File.Exists(configPath))
-                throw new FileNotFoundException("Test configuration file not found. Prepare it from _Config.xml", configPath);
+            //var configPath = Path.GetFullPath("./../../Assets/Config.xml");
+            var configPath = "./../../Assets/Config.xml";
+            //if(!File.Exists(configPath))
+            //    throw new FileNotFoundException("Test configuration file not found. Prepare it from _Config.xml", configPath);
             var w = (IDictionary<string, object>)_a;
             var doc = XDocument.Load(configPath);
             foreach (var item in doc.Descendants("Item"))

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Rest4Net.GoogleCustomSearch
@@ -34,9 +35,21 @@ namespace Rest4Net.GoogleCustomSearch
         public string SiteSearchFilter = null;
         public int Start = 1;
 
+#if !PORTABLE
+        private static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            return type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+        }
+#else
+        private static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            return type.GetTypeInfo().DeclaredFields;
+        }
+#endif
+
         internal Command ProcessCommand(Command cmd)
         {
-            foreach (var field in GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var field in GetFields(GetType()))
             {
                 var v = field.GetValue(this);
                 if (v == null)

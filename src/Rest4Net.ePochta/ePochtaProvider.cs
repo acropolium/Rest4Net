@@ -560,9 +560,18 @@ namespace Rest4Net.ePochta
             var cmd = Run("getCampaignDeliveryStats").WithParameter("id", id);
             if (sinceDateTime != null)
                 cmd = cmd.WithParameter("datefrom", DateUtils.ToPochtaString(sinceDateTime));
-            return cmd.Execute()
+            return ConvertAll<SmsDeliveryInfoImpl, ISmsDeliveryInfo>(cmd.Execute()
                 .To<ResponsePureImpl<List<SmsDeliveryInfoImpl>>>(ConvertAtomParkArrayedResult)
-                .result.ConvertAll(x => (ISmsDeliveryInfo) x);
+                .result);
+        }
+
+        private List<TI> ConvertAll<TC, TI>(List<TC> data)
+            where TC : class, TI
+        {
+            var r = new List<TI>(data.Count);
+            for (var i = 0; i < data.Count; i++)
+                r[i] = data[i];
+            return r;
         }
 
         /// <summary>
@@ -571,9 +580,9 @@ namespace Rest4Net.ePochta
         /// <returns>List of campaigns with short info</returns>
         public List<ICampaign> ListCampaigns()
         {
-            return Run("getCampaignList").Execute()
+            return ConvertAll<CampaignImpl, ICampaign>(Run("getCampaignList").Execute()
                 .To<ResponsePureImpl<List<CampaignImpl>>>(ConvertAtomParkArrayedResult)
-                .result.ConvertAll(x => (ICampaign)x);
+                .result);
         }
 
         private static JToken ConvertAtomParkArrayedResult(JToken input)

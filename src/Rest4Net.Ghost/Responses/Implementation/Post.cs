@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Rest4Net.Ghost.Responses.Implementation
 {
-    internal class Post : IPost
+    internal class Post : ContainJson, IPost
     {
 #pragma warning disable 649
         [Ignore]

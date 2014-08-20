@@ -2,7 +2,7 @@
 
 namespace Rest4Net.Ghost.Responses
 {
-    public interface IPosts
+    public interface IPosts : IContainJson
     {
         IEnumerable<IPost> Items { get; }
         int Page { get; }

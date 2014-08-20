@@ -33,8 +33,7 @@ namespace Rest4Net.CommandUtils
 #if PORTABLE
         private static IEnumerable<FieldInfo> GetFields(Type resultType)
         {
-            //return resultType.GetTypeInfo().DeclaredFields;
-            return resultType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return resultType.GetTypeInfo().DeclaredFields;
         }
 #else
         private static IEnumerable<FieldInfo> GetFields(Type resultType)
@@ -51,6 +50,8 @@ namespace Rest4Net.CommandUtils
             if (vObject != null)
             {
                 var o = Activator.CreateInstance(resultType);
+                if (o as ContainJson != null)
+                    (o as ContainJson).Json = value;
                 foreach (var field in GetFields(resultType))
                 {
                     var fn = field.Name;
